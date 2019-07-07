@@ -1,0 +1,14 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+flake8 = "*"
+
+[packages]
+requests = "==2.18.4"
+flask = "==0.12.2"
+
+[requires]
+python_version = "3.7"
