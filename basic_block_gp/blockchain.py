@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99) # Create the genesis block
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -41,7 +41,7 @@ class Blockchain(object):
         """
         Creates a new transaction to go into the next mined Block
 
-        :param sender: <str> Address of the Recipient
+        :param sender: <str> Address of the Sender
         :param recipient: <str> Address of the Recipient
         :param amount: <int> Amount
         :return: <int> The index of the BLock that will hold this transaction
@@ -74,6 +74,7 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
+    # This is a "stub". The skeleton of a function with some instructions on how to implement.
     def proof_of_work(self, last_proof):
         """
         Simple Proof of Work Algorithm
@@ -180,6 +181,8 @@ def new_transaction():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        "current_chain": blockchain.chain,
+        "length": len(blockchain.chain)
     }
     return jsonify(response), 200
 
