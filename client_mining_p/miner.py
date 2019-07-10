@@ -18,10 +18,12 @@ if __name__ == '__main__':
     # Run forever until interrupted
     while True:
         # Get the last proof from the server and look for a new one
-        r = requests.get(url = node + "/mine")
+        r = requests.get(url = node + "/last_proof")
         data = r.json()
-        last_proof = data['proof']
-        print("Last Proof: %s"%(last_proof))
+        breakpoint()
+        # last_proof = data['proof']
+        # print("Last Proof: %s"%(last_proof))
+        # new_proof = mine('new proof')
         # coins_mined += 1
         # When found, POST it to the server {"proof": new_proof}
         # r = requests.post(url = node + "/mine", data = data)

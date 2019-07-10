@@ -98,7 +98,7 @@ class Blockchain(object):
         """
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+        return guess_hash[:6] == "000000"
 
     def valid_chain(self, chain):
         """
@@ -195,6 +195,13 @@ def full_chain():
     }
     return jsonify(response), 200
 
+@app.route('/last_proof', methods=['GET'])
+def last_proof():
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+
+    response = {'Last Proof': f'{last_proof}'}
+    return jsonify(response), 200
 
 # Note, when demoing, start with this, then change to the below
 # if __name__ == '__main__':
