@@ -17,9 +17,17 @@ if __name__ == '__main__':
     coins_mined = 0
     # Run forever until interrupted
     while True:
-        # TODO: Get the last proof from the server and look for a new one
-        # TODO: When found, POST it to the server {"proof": new_proof}
-        # TODO: If the server responds with 'New Block Forged'
+        # Get the last proof from the server and look for a new one
+        r = requests.get(url = node + "/mine")
+        data = r.json()
+        last_proof = data['proof']
+        print("Last Proof: %s"%(last_proof))
+        # coins_mined += 1
+        # When found, POST it to the server {"proof": new_proof}
+        # r = requests.post(url = node + "/mine", data = data)
+        # pastebin_url = r.text 
+        # print("The pastebin URL is:%s"%pastebin_url)
+        # If the server responds with 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+
