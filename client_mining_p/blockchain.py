@@ -76,19 +76,19 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, last_proof):
-        """
-        Simple Proof of Work Algorithm
-        - Find a number p' such that hash(pp') contains 4 leading
-        zeroes, where p is the previous p'
-        - p is the previous proof, and p' is the new proof
-        """
+        #def proof_of_work(self, last_proof):
+        #"""
+        #Simple Proof of Work Algorithm
+        #- Find a number p' such that hash(pp') contains 4 leading
+        #zeroes, where p is the previous p'
+        #- p is the previous proof, and p' is the new proof
+        #"""
 
-        proof = 0
-        while self.valid_proof(last_proof, proof) is False:
-            proof += 1
+        #proof = 0
+        #while self.valid_proof(last_proof, proof) is False:
+        #    proof += 1
 
-        return proof
+        #return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -98,7 +98,7 @@ class Blockchain(object):
         """
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+        return guess_hash[:4] == "000000"
 
     def valid_chain(self, chain):
         """
