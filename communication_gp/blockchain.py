@@ -18,6 +18,19 @@ class Blockchain(object):
 
         self.new_block(previous_hash=1, proof=100)
 
+    def create_genesis_block(self):
+        
+        block = {
+            'index': 1,
+            'timestamp': 0,
+            'transactions': [],
+            'proof': 99,
+            'previous_hash': 1,
+        }
+
+        # Reset the current list of transactions
+        self.chain.append(block)
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -39,6 +52,7 @@ class Blockchain(object):
         self.current_transactions = []
 
         self.chain.append(block)
+        self.broadcast_new_block(block)
         return block
 
     def new_transaction(self, sender, recipient, amount):
@@ -175,6 +189,15 @@ class Blockchain(object):
 
         return False
 
+    def broadcast_new_block(self, block):
+
+        post_data = {'block': block}
+
+        for node in self.nodes:
+            r = requests.post(f'http://{node}/block/new', json=post_data)
+
+            if r.status_code != 200:
+                pass
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -280,6 +303,33 @@ def register_nodes():
     }
     return jsonify(response), 201
 
+@app.route('/block/new', methods=['POST'])
+def new_block():
+    values = request.get_json()
+
+    # Check that the required fields are in the POST'ed data
+    required = ['block']
+    if not all(k in values for k in required):
+        return 'Missing Values', 400
+
+    # Create a new Block
+    # Validate block
+    # Make sure index is exactly 1 greater than last chain
+    new_block = values['block']
+    last_block = blockchain.last_block
+
+    if new_block['index'] == last_block['index'] + 1:    
+        # Make sure that the block's last hash matches our hash of our last block
+        if new_block['previous_hash'] == blockchain.has(last_block):
+            # Validate the proof in the new block
+            if blockchain.valid_proof(last_block['proof'], new_block['proof']):
+                # The BLock is good, add to chain
+                blockchain.chain.append(new_block)
+                return 'Block Accepted', 200
+    else:
+        # TODO: Error message
+        # TODO: request chain from peers and check for consensus
+        return 'Block Rejected', 200
 
 @app.route('/nodes/resolve', methods=['GET'])
 def consensus():
@@ -307,5 +357,5 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         port = int(sys.argv[1])
     else:
-        port = 5000
+        port = 5001
     app.run(host='0.0.0.0', port=port)
