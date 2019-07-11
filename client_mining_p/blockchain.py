@@ -139,7 +139,7 @@ def mine():
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
     last_proof = last_block['proof']
-    proof = request.get_json().get('proof');
+    proof = request.get_json().get('proof')
 
 
     if blockchain.valid_proof(last_proof, proof):
