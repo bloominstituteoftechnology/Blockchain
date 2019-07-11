@@ -5,7 +5,19 @@ import sys
 
 
 # TODO: Implement functionality to search for a proof 
+def proof_of_work(self, last_proof):
+    """
+    Simple Proof of Work Algorithm
+    - Find a number p' such that hash(pp') contains 4 leading
+    zeroes, where p is the previous p'
+    - p is the previous proof, and p' is the new proof
+    """
 
+    proof = 0
+    while self.valid_proof(last_proof, proof) is False:
+        proof += 1
+
+    return proof
 
 if __name__ == '__main__':
     # What node are we interacting with?
