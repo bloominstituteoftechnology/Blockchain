@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         node = sys.argv[1]
     else:
-        node = "http://localhost:5000"
+        node = "http://localhost:5001"
 
     coins_mined = 0
     # Run forever until interrupted
