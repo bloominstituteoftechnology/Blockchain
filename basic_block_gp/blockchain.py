@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -80,8 +80,11 @@ class Blockchain(object):
         Find a number p such that hash(last_block_string, p) contains 6 leading
         zeroes
         """
-
-        pass
+        proof = 0
+        # for block 1, hash(1, p) = 000000x
+        while not self.valid_proof(last_proof, proof):
+            proof += 1
+        return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -89,8 +92,16 @@ class Blockchain(object):
         Validates the Proof:  Does hash(block_string, proof) contain 6
         leading zeroes?
         """
-        # TODO
-        pass
+        # build string to hash
+        guess = f'{last_proof}{proof}'.encode()
+        # use hash function
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        # check if 6 leading 0's of hash result
+        begginning = guess_hash[0:6]  # [:6]
+        if begginning == "000000":
+            return True
+        else:
+            return False
 
     def valid_chain(self, chain):
         """
@@ -177,6 +188,8 @@ def new_transaction():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'currentChain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
@@ -184,3 +197,4 @@ def full_chain():
 # Run the program on port 5000
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    # app.run(host='localhost'), port=5000)
