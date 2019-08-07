@@ -105,12 +105,12 @@ class Blockchain(object):
         :return: <bool> True if valid, False if not
         """
 
-        last_block = chain[0]
+        prev_block = chain[0]
         current_index = 1
 
         while current_index < len(chain):
             block = chain[current_index]
-            print(f'{last_block}')
+            print(f'{prev_block}')
             print(f'{block}')
             print("\n-------------------\n")
             # Check that the hash of the block is correct
@@ -119,7 +119,7 @@ class Blockchain(object):
             # Check that the Proof of Work is correct
             # TODO: Return false if proof isn't correct
 
-            last_block = block
+            prev_block = block
             current_index += 1
 
         return True
