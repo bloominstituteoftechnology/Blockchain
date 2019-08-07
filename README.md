@@ -1,4 +1,4 @@
-# Block-Chain-Python
+# Block-Chain-Python - A. Franklin
 
 https://imgur.com/xSlgvtl
 
