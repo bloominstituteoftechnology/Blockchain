@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -75,6 +75,9 @@ class Blockchain(object):
         return self.chain[-1]
 
     def proof_of_work(self, last_proof):
+        # while not valid_proof(last_proof, proof):
+
+        # for block 1 hash (1, p) = 000000x
         """
         Simple Proof of Work Algorithm
         Find a number p such that hash(last_block_string, p) contains 6 leading
@@ -85,10 +88,17 @@ class Blockchain(object):
 
     @staticmethod
     def valid_proof(last_proof, proof):
-        """
-        Validates the Proof:  Does hash(block_string, proof) contain 6
-        leading zeroes?
-        """
+        guess = f"{last_proof}{proof}".encode()
+        hash_guess = hashlib.sha3_256(guess).hexdigest()
+        check = hash_guess[0:6]
+        if check == '000000':
+            return True
+        else:
+            return False
+        # """
+        # Validates the Proof:  Does hash(block_string, proof) contain 6
+        # leading zeroes?
+        # """
         # TODO
         pass
 
@@ -176,11 +186,15 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+        'current_Chain': blockchain.chain
         # TODO: Return the chain and its current length
     }
+
     return jsonify(response), 200
 
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='localhost', port=5000)
