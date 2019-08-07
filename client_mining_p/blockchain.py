@@ -2,14 +2,22 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
+
 from flask import Flask, jsonify, request
+
 import sys
+
+
+
 class Blockchain(object):
     def __init__(self):
         self.chain = []
         self.current_transactions = []
         self.nodes = set()
         self.new_block(previous_hash=1, proof=99)
+
+
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -28,6 +36,9 @@ class Blockchain(object):
         self.current_transactions = []
         self.chain.append(block)
         return block
+
+
+
     def new_transaction(self, sender, recipient, amount):
         """
         Creates a new transaction to go into the next mined Block
@@ -42,6 +53,9 @@ class Blockchain(object):
             'amount': amount,
         })
         return self.last_block['index'] + 1
+
+
+
     @staticmethod
     def hash(block):
         """
@@ -53,20 +67,15 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
+
+
+
     @property
     def last_block(self):
         return self.chain[-1]
-    # def proof_of_work(self, last_proof):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     - Find a number p' such that hash(pp') contains 4 leading
-    #     zeroes, where p is the previous p'
-    #     - p is the previous proof, and p' is the new proof
-    #     """
-    #     proof = 0
-    #     while self.valid_proof(last_proof, proof) is False:
-    #         proof += 1
-    #     return proof
+
+
+
     @staticmethod
     def valid_proof(last_proof, proof):
         """
@@ -76,6 +85,9 @@ class Blockchain(object):
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:6] == "000000"
+
+
+
     def valid_chain(self, chain):
         """
         Determine if a given blockchain is valid
@@ -98,6 +110,9 @@ class Blockchain(object):
             last_block = block
             current_index += 1
         return True
+
+
+
 # Instantiate our Node
 app = Flask(__name__)
 # Generate a globally unique address for this node
@@ -105,6 +120,9 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
+
+
+
 def mine():
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
@@ -115,7 +133,7 @@ def mine():
         print(f'failure: {proof}')
         proof += 1
 
-    print("success")
+    print("success: YOU RICH")
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mine a new coin
     blockchain.new_transaction(
@@ -134,6 +152,9 @@ def mine():
         'previous_hash': block['previous_hash'],
     }
     return jsonify(response), 200
+
+
+
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
     values = request.get_json()
@@ -148,12 +169,18 @@ def new_transaction():
     response = {'message': f'Transaction will be added to Block {index}'}
     return jsonify(response), 201
 @app.route('/last_proof', methods=['GET'])
+
+
+
 def last_proof():
     #We want to get the last proof. Last block of the array
     response = {
         'proof': blockchain.last_block['proof']
     }
     return jsonify(response), 200
+
+
+
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
