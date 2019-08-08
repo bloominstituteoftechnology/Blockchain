@@ -186,9 +186,9 @@ def full_chain():
 @app.route('/lastproof', methods=['GET'])
 def last_proof():
     last_block = blockchain.last_block  # last block is dictionary
-
+    # last_block["proof"]
     response = {
-        "proof": last_block["proof"]
+        "proof": last_block
     }
     return jsonify(response), 200
 
