@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = [] # transactions cuing up to be part of the next block that gets added to end of chain
         self.nodes = set() # actors
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)
 
     def new_block(self, proof, previous_hash=None):
         """
