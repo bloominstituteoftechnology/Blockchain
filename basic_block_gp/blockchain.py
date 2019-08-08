@@ -1,10 +1,11 @@
+#hash algorithims - SHA256 used
 import hashlib
 import json
 from time import time
 from uuid import uuid4
 
+#flask is a webserver for python
 from flask import Flask, jsonify, request
-
 
 class Blockchain(object):
     def __init__(self):
