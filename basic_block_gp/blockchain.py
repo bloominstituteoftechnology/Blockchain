@@ -126,11 +126,10 @@ class Blockchain(object):
             # Check that the hash of the block is correct
             if block.previous_hash is not self.hash(chain[current_index - 1]):
                 return False
-            # TODO: Return false if hash isn't correct
-            # if self.valid_proof()
-            # Check that the Proof of Work is correct
-            # TODO: Return false if proof isn't correct
-
+            elif not self.valid_proof(block.previous_hash, self.hash(block)):
+                return False
+            else:
+                return True
             last_block = block
             current_index += 1
 
@@ -146,6 +145,7 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
+print(blockchain.valid_chain(blockchain.chain))
 
 @app.route('/mine', methods=['GET'])
 def mine():
