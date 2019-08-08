@@ -2,9 +2,12 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
+# from selenium import webdriver
 
-from flask import Flask, jsonify, request
 
+from flask import Flask, jsonify, request, redirect, url_for, flash, render_template
+
+# driver = webdriver.Firefox()
 
 class Blockchain(object):
     def __init__(self):
@@ -74,18 +77,7 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, last_proof):
-        """
-        Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
-        zeroes
-        """
-        proof = 0
 
-        while self.valid_proof(last_proof, proof) is False:
-            proof += 1
-        
-        return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -98,8 +90,8 @@ class Blockchain(object):
         #Hash string
         guess_hash = hashlib.sha256(guess).hexdigest()
         #check for 6 leading 0s
-        beg = guess_hash[:6]
-        return beg == '000000'
+        beg = guess_hash[:5]
+        return beg == '00000'
 
     def valid_chain(self, chain):
         """
@@ -139,6 +131,7 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
@@ -163,7 +156,10 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
     }
+
+ 
     return jsonify(response), 200
+
 
 
 @app.route('/transactions/new', methods=['POST'])
@@ -190,6 +186,15 @@ def full_chain():
         # TODO: Return the chain and its current length
         'currentChain': blockchain.chain,
         'length': len(blockchain.chain)
+    }
+    return jsonify(response), 200
+
+@app.route('/last_proof', methods=['GET'])
+def last_proof():
+    response = {
+        # TODO: Return the chain and its current length
+        'last_proof': blockchain.last_block['proof']
+
     }
     return jsonify(response), 200
 
