@@ -3,7 +3,6 @@ import json
 from time import time
 from uuid import uuid4
 from flask import Flask, jsonify, request
-
 import sys
 
 
@@ -26,7 +25,6 @@ class Blockchain(object):
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
-            # points to last item in array
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
         # Reset the current list of transactions
@@ -116,8 +114,6 @@ app = Flask(__name__)
 node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
-
-
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
