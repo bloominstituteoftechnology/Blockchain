@@ -1,10 +1,9 @@
 import hashlib
 import requests
-
+import time
 import sys
 
-
-# TODO: Implement functionality to search for a proof 
+# TODO: Implement functionality to search for a proof
 
 
 if __name__ == '__main__':
@@ -14,14 +13,40 @@ if __name__ == '__main__':
     else:
         node = "http://localhost:5000"
 
+
+    def invalid_proof(last_proof, proof):
+        """
+        Validates the Proof:  Does hash(block_string, proof) contain 6
+        leading zeroes?
+        """
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        beg = guess_hash[:7]
+
+        if beg == "0000000":
+            return False
+        else:
+            return True
+
     coins_mined = 0
-    # Run forever until interrupted
-    while True:
-        # TODO: Get the last proof from the server and look for a new one
-        # TODO: When found, POST it to the server {"proof": new_proof}
-        # TODO: We're going to have to research how to do a POST in Python
-        # HINT: Research `requests` and remember we're sending our data as JSON
-        # TODO: If the server responds with 'New Block Forged'
-        # add 1 to the number of coins mined and print it.  Otherwise,
-        # print the message from the server.
-        pass
+    proof = 0
+    invalid = True
+    last_proof = requests.get(node + "/last-proof")
+
+    start = time.time()
+    while invalid:
+        invalid = invalid_proof(last_proof.content, proof)
+
+        now = time.time()
+        sys.stdout.write("\rValidating proof. {0} seconds elapsed.".format(now - start))
+        sys.stdout.flush()
+
+        if not invalid:
+            coins_mined += 1
+            response = requests.post(node + "/mine", data={'last_proof': last_proof.content, 'proof': proof})
+
+            print(response.content.message)
+
+        else:
+            proof += 1
+
