@@ -8,9 +8,9 @@ from flask import Flask, jsonify, request
 
 class Blockchain(object):
     def __init__(self):
-        self.chain = []
-        self.current_transactions = []
-        self.nodes = set()
+        self.chain = [] # chain of blocks
+        self.current_transactions = [] # transactions cuing up to be part of the next block that gets added to end of chain
+        self.nodes = set() # actors
 
         self.new_block(previous_hash=1, proof=100)
 
@@ -28,13 +28,13 @@ class Blockchain(object):
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'previous_hash': previous_hash or self.hash(self.chain[-1]), #generate hash for previous block
         }
 
         # Reset the current list of transactions
         self.current_transactions = []
 
-        self.chain.append(block)
+        self.chain.append(block) # add the block to the chain
         return block
 
     def new_transaction(self, sender, recipient, amount):
@@ -93,7 +93,7 @@ class Blockchain(object):
         # TODO
         pass
 
-    def valid_chain(self, chain):
+    def valid_chain(self, chain): #find the longest chain w/ correct hashes
         """
         Determine if a given blockchain is valid
 
@@ -180,6 +180,8 @@ def new_transaction():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'currentChain' : blockchain.chain,
+        'length' : len(blockchain.chain)
     }
     return jsonify(response), 200
 
