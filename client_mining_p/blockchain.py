@@ -103,7 +103,7 @@ class Blockchain(object):
             return True
         else:
             return False
-        # """
+        # """z
         # Validates the Proof:  Does hash(block_string, proof) contain 6
         # leading zeroes?
         # """
@@ -188,6 +188,11 @@ def new_transaction():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
+    if not blockchain.valid_proof(last_proof, values['proof']):
+        response = {
+            'message': "Proof is invalid, either already submitted or incorrect."
+        }
+        return jsonify(response), 200
     # Create a new Transaction
     index = blockchain.new_transaction(values['sender'],
                                        values['recipient'],
@@ -200,7 +205,6 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        'chain': blockchain.chain,
         'length': len(blockchain.chain),
         'current_Chain': blockchain.chain
         # TODO: Return the chain and its current length
@@ -212,7 +216,7 @@ def full_chain():
 def last_proof():
 
     response = {
-        'last-proof': blockchain.last_block
+        'last-proof': blockchain.last_block['proof']
     }
 
     return jsonify(response), 200
