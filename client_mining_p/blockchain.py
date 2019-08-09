@@ -208,7 +208,10 @@ def full_chain():
 
     return jsonify(response), 200
 
+@app.route('/last-proof', methods=['GET'])
+def last_proof():
+
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    app.run(host='localhost', port=5000, debug=True)
