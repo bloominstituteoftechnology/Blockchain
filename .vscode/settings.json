@@ -3,5 +3,6 @@
         "activityBar.background": "#2E1D71",
         "titleBar.activeBackground": "#40299E",
         "titleBar.activeForeground": "#FAF9FD"
-    }
+    },
+    "python.pythonPath": "/home/phinehas/.local/share/virtualenvs/Blockchain-KuZi3a8E/bin/python"
 }
