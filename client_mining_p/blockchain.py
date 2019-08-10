@@ -3,7 +3,7 @@ import json
 from time import time
 from uuid import uuid4
 # from selenium import webdriver
-
+import sys
 
 from flask import Flask, jsonify, request, redirect, url_for, flash, render_template
 
@@ -16,6 +16,13 @@ class Blockchain(object):
         self.nodes = set()
 
         self.new_block(previous_hash=1, proof=99)
+
+    def proof_of_work(self, last_proof):
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+
+        return proof
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -138,7 +145,7 @@ def mine():
     submitted_proof = values.get('proof')
 
     required = ['proof']
-    if not all(x in value for x in required):
+    if not all(k in values for k in required):
         return 'Missing Values', 400
 
     if blockchain.valid_proof(last_proof, submitted_proof):
@@ -147,6 +154,9 @@ def mine():
             recipient=node_identifier,
             amount=1,
         )
+
+        previous_hash = blockchain.hash(last_block)
+        block = blockchain.new_block(submitted_proof, previous_hash)
 
         response = {
             'message': "New Block Forged",
@@ -158,7 +168,7 @@ def mine():
         return jsonify(response), 200
     else:
         response = {
-            'message': 'Prooof was invalid or already submitted'
+            'message': 'Proof was invalid or already submitted'
         }
         return jsonify(response), 200
 
@@ -193,14 +203,22 @@ def full_chain():
 
 @app.route('/last_proof', methods=['GET'])
 def last_proof():
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
     response = {
         # TODO: Return the chain and its current length
-        'last_proof': blockchain.last_block['proof']
+        'last_proof': f'{last_proof}'
 
     }
     return jsonify(response), 200
 
 
 # Run the program on port 5000
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000)
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 5000
+    app.run(host='0.0.0.0', port=port)
