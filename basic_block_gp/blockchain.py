@@ -2,6 +2,7 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
+import re
 
 from flask import Flask, jsonify, request
 
@@ -12,7 +13,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -41,7 +42,7 @@ class Blockchain(object):
         """
         Creates a new transaction to go into the next mined Block
 
-        :param sender: <str> Address of the Recipient
+        :param sender: <str> Address of the Sender
         :param recipient: <str> Address of the Recipient
         :param amount: <int> Amount
         :return: <int> The index of the BLock that will hold this transaction
@@ -80,8 +81,18 @@ class Blockchain(object):
         Find a number p such that hash(last_block_string, p) contains 6 leading
         zeroes
         """
+        proof = 0
+        guess = f'{last_proof}{proof}'.encode()
+        # guess_hash = hashlib.sha256(guess).hexdigest()
+        # beg = guess_hash[0:6]
+        # if beg == "000000":
+        #     return True
+        # else:
+        #     return False
+        while not self.valid_proof(last_proof, proof):
+            proof += 1
 
-        pass
+        return proof
 
     @staticmethod
     def valid_proof(last_proof, proof):
@@ -90,7 +101,20 @@ class Blockchain(object):
         leading zeroes?
         """
         # TODO
-        pass
+        # guess = f'{last_proof}{proof}'.encode()
+        # guess_hash = hashlib.sha256(guess).hexdigest()
+        # beg = guess_hash[0:6]
+        # if beg == "000000":
+        #     return True
+        # else:
+        #     return False
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        beg = re.findall("^0000000", guess_hash)
+        if beg:
+            return True
+        else:
+            return False
 
     def valid_chain(self, chain):
         """
@@ -133,17 +157,18 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    proof = blockchain.proof_of_work()
+    proof = blockchain.proof_of_work(blockchain.hash(blockchain.last_block))
 
     # We must receive a reward for finding the proof.
     # TODO:
     # The sender is "0" to signify that this node has mine a new coin
     # The recipient is the current node, it did the mining!
     # The amount is 1 coin as a reward for mining the next block
+    blockchain.new_transaction(0, node_identifier, 1)
 
     # Forge the new Block by adding it to the chain
     # TODO
-
+    block = blockchain.new_block(proof, blockchain.last_block)
     # Send a response with the new block
     response = {
         'message': "New Block Forged",
@@ -177,10 +202,13 @@ def new_transaction():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'currentChain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # app.run(host='0.0.0.0', port=5000)
+    app.run(host='localhost', port=5000)
