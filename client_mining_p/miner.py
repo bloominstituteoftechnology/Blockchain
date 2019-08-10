@@ -42,18 +42,25 @@ if __name__ == '__main__':
     while True:
         # TODO: Get the last proof from the server and look for a new one
 
-        # TODO: Use post request to send/get back new proof?
+        # TODO: Use get request to send/get back new proof?
+
+        r_get = requests.get(url= node + '/last_block_proof', data=None)
+        info = r_get.json()
+
         new_proof = proof_of_work(last_proof)
 
         data = { 'proof': new_proof }
 
         r = requests.post(url=node+'/mine', data=data)
 
-        print(r.message)
         # TODO: When found, POST it to the server {"proof": new_proof}
         # TODO: We're going to have to research how to do a POST in Python
         # HINT: Research `requests` and remember we're sending our data as JSON
         # TODO: If the server responds with 'New Block Forged'
+
+        if r.message == "New Block Forged":
+            coins_mined += 1
+            print(f"You have {coins_mined} coins.")
+        print(r.message)
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass

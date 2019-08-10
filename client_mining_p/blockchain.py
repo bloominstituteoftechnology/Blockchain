@@ -153,6 +153,16 @@ print(blockchain.valid_chain(blockchain.chain))
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
+    values = request.get_json()
+    required = ['proof']
+
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+    if not blockchain.valid_proof(last_proof, values['proof']):
+        response = {
+            'message': 'Proof is invalid.'
+        }
+
     proof = blockchain.proof_of_work(blockchain.last_block)
 
     # We must receive a reward for finding the proof.
@@ -188,11 +198,6 @@ def new_transaction():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    if not blockchain.valid_proof(last_proof, values['proof']):
-        response = {
-            'message': "Proof is invalid, either already submitted or incorrect."
-        }
-        return jsonify(response), 200
     # Create a new Transaction
     index = blockchain.new_transaction(values['sender'],
                                        values['recipient'],
@@ -212,7 +217,7 @@ def full_chain():
 
     return jsonify(response), 200
 
-@app.route('/last-proof', methods=['GET'])
+@app.route('/last_block_proof', methods=['GET'])
 def last_proof():
 
     response = {
