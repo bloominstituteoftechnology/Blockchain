@@ -17,9 +17,9 @@ class Blockchain(object):
 
         self.new_block(previous_hash=1, proof=99)
 
-    def proof_of_work(self, last_proof):
+    def proof_of_work(self, last_block_string):
         proof = 0
-        while self.valid_proof(last_proof, proof) is False:
+        while self.valid_proof(last_block_string, proof) is False:
             proof += 1
 
         return proof
@@ -87,13 +87,13 @@ class Blockchain(object):
 
 
     @staticmethod
-    def valid_proof(last_proof, proof):
+    def valid_proof(last_block_string, proof):
         """
         Validates the Proof:  Does hash(block_string, proof) contain 6
         leading zeroes?
         """
         #String to hash
-        guess = f'{last_proof}{proof}'.encode()
+        guess = f'{last_block_string}{proof}'.encode()
         #Hash string
         guess_hash = hashlib.sha256(guess).hexdigest()
         #check for 6 leading 0s
@@ -148,7 +148,7 @@ def mine():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    if blockchain.valid_proof(last_proof, submitted_proof):
+    if blockchain.valid_proof(blockchain.last_block, submitted_proof):
         blockchain.new_transaction(
             sender='0',
             recipient=node_identifier,
