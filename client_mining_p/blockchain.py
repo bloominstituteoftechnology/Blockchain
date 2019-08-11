@@ -201,13 +201,11 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/last_proof', methods=['GET'])
-def last_proof():
-    last_block = blockchain.last_block
-    last_proof = last_block['proof']
+@app.route('/last_block_string', methods=['GET'])
+def last_block_string():
     response = {
         # TODO: Return the chain and its current length
-        'last_proof': f'{last_proof}'
+        'last_block_string': blockchain.last_block
 
     }
     return jsonify(response), 200
