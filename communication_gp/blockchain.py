@@ -155,7 +155,12 @@ print(blockchain.valid_chain(blockchain.chain))
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
+    last_block = blockchain.last_block
+    proof = last_block['proof']
+    send_proof = blockchain.proof_of_work(proof)
     values = request.get_json()
+    get_proof = values.get('proof')
+
     required = ['proof']
 
     if not all(k in values for k in required):
@@ -165,7 +170,6 @@ def mine():
             'message': 'Proof is invalid.'
         }
 
-    proof = blockchain.proof_of_work(blockchain.last_block)
 
     # We must receive a reward for finding the proof.
     blockchain.new_transaction("0", node_identifier, 1)
