@@ -64,33 +64,53 @@ class Blockchain(object):
         "return": <str>
         """
 
+
+        # json.dumps converts json into a string
+        # hashlib.sha246 is used to createa hash
+        # It requires a `bytes-like` object, which is what
+        # .encode() does.  It convertes the string to bytes.
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
 
         block_string = json.dumps(block, sort_keys=True).encode()
+
+        # By itself, this function returns the hash in a raw string
+        # that will likely include escaped characters.
+        # This can be hard to read, but .hexdigest() converts the
+        # hash to a string using hexadecimal characters, which is
+        # easer to work with and understand.  
         return hashlib.sha256(block_string).hexdigest()
 
     @property
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, last_proof):
+    def proof_of_work(self, block):
         """
         Simple Proof of Work Algorithm
         Find a number p such that hash(last_block_string, p) contains 6 leading
         zeroes
-        """
-
-        pass
-
-    @staticmethod
-    def valid_proof(last_proof, proof):
-        """
-        Validates the Proof:  Does hash(block_string, proof) contain 6
-        leading zeroes?
+        :return: A valid proof for the provided block
         """
         # TODO
         pass
+        # return proof
+
+    @staticmethod
+    def valid_proof(block_string, proof):
+        """
+        Validates the Proof:  Does hash(block_string, proof) contain 6
+        leading zeroes?  Return true if the proof is valid
+        :param block_string: <string> The stringified block to use to
+        check in combination with `proof`
+        :param proof: <int?> The value that when combined with the
+        stringified previous block results in a hash that has the
+        correct number of leading zeroes.
+        :return: True if the resulting hash is a valid proof, False otherwise
+        """
+        # TODO
+        pass
+        # return True or False
 
     def valid_chain(self, chain):
         """
