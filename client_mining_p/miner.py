@@ -27,8 +27,8 @@ def valid_proof(last_block_string, proof):
     #Hash string
     guess_hash = hashlib.sha256(guess).hexdigest()
     #check for 6 leading 0s
-    beg = guess_hash[:5]
-    return beg == '00000'
+    beg = guess_hash[:6]
+    return beg == '000000'
 
 
 
