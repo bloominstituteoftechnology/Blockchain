@@ -152,7 +152,7 @@ class Blockchain(object):
         max_length = len(self.chain)
 
         for node in neighbors:
-            response = requests.get(f'http://{node}/chain')
+            response = request.get(f'http://{node}/chain')
 
             if response.status_code == 200:
                 length = response.json()['length']
@@ -173,7 +173,7 @@ class Blockchain(object):
         post_data = {'block': block}
 
         for node in neighbors:
-            response = requests.post(f'http://{node}/block/new', json=post_data)
+            response = request.post(f'http://{node}/block/new', json=post_data)
             if response.status_code != 200:
                 print('Error broadcasting new block')
                 pass
@@ -229,6 +229,25 @@ def mine():
         }
         return jsonify(response), 200
 
+@app.route('/block/new', methods=['POST'])
+def new_block():
+    values = request.get_json()
+
+    required = ['block']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    new_block = values.get('block')
+    old_block = blockchain.last_block
+    if new_block.get('index') == old_block.get('index') + 1:
+        if (new_block.get('previous_hash') == blockchain.hash(blockchain.last_block)):
+            blockchain.add_block(new_block)
+            return 'Block accepted', 200
+        else:
+            return 'Invalid block', 400
+    else:
+        consensus()
+        return 'Seeking consensus...', 200
 
 
 @app.route('/transactions/new', methods=['POST'])
