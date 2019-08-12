@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, proof=99)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -82,8 +82,12 @@ class Blockchain(object):
         
         :return: <int> A valid proof
         """
+        proof = 0
 
-        pass
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        
+        return proof
 
     @staticmethod
     def valid_proof(proof):
@@ -94,8 +98,13 @@ class Blockchain(object):
         :param proof: <string> The proposed proof
         :return: <bool> Return true if the proof is valid, false if it is not
         """
-        # TODO
-        pass
+        #String to hash
+        guess = f'{last_proof}{proof}'.encode()
+        #Hash string
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        #check for 6 leading 0s
+        beg = guess_hash[:6]
+        return beg == '000000'
 
     def valid_chain(self, chain):
         """
@@ -138,16 +147,18 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    proof = blockchain.proof_of_work()
+    proof = blockchain.proof_of_work(blockchain.last_block)
 
     # We must receive a reward for finding the proof.
     # TODO:
     # The sender is "0" to signify that this node has mine a new coin
     # The recipient is the current node, it did the mining!
     # The amount is 1 coin as a reward for mining the next block
+    blockchain.new_transaction(0, node_identifier,1)
 
     # Forge the new Block by adding it to the chain
     # TODO
+    block = blockchain.new_block(proof, blockchain.hash(blockchain.last_block))
 
     # Send a response with the new block
     response = {
@@ -182,6 +193,8 @@ def new_transaction():
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'currentChain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
