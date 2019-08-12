@@ -3,7 +3,7 @@ import requests
 
 import sys
 
-def proof_of_work(last_proof):
+def proof_of_work(last_block_string):
     """
     Simple Proof of Work Algorithm
     Find a number p such that hash(last_block_string, p) contains 6 leading
@@ -11,24 +11,24 @@ def proof_of_work(last_proof):
     """
     proof = 0
 
-    while valid_proof(last_proof, proof) is False:
+    while valid_proof(last_block_string, proof) is False:
         proof += 1
     
     print('Sending to server....')
     return proof
 
-def valid_proof(last_proof, proof):
+def valid_proof(last_block_string, proof):
     """
     Validates the Proof:  Does hash(block_string, proof) contain 6
     leading zeroes?
     """
     #String to hash
-    guess = f'{last_proof}{proof}'.encode()
+    guess = f'{last_block_string}{proof}'.encode()
     #Hash string
     guess_hash = hashlib.sha256(guess).hexdigest()
     #check for 6 leading 0s
-    beg = guess_hash[:5]
-    return beg == '00000'
+    beg = guess_hash[:6]
+    return beg == '000000'
 
 
 
@@ -43,11 +43,11 @@ if __name__ == '__main__':
     coins_mined = 0
     # Run forever until interrupted
     while True:
-        r = requests.get(url = node +"/last_proof")
+        r = requests.get(url = node +"/last_block_string")
         data = r.json()
-        last_proof = data['last_proof']
+        last_block_string = data['last_block_string']['previous_hash']
 
-        new_proof = proof_of_work(last_proof)
+        new_proof = proof_of_work(last_block_string)
 
         proof_data = {'proof': new_proof}
 

@@ -17,12 +17,12 @@ class Blockchain(object):
 
         self.new_block(previous_hash=1, proof=99)
 
-    def proof_of_work(self, last_proof):
-        proof = 0
-        while self.valid_proof(last_proof, proof) is False:
-            proof += 1
+    # def proof_of_work(self, last_block_string):
+    #     proof = 0
+    #     while self.valid_proof(blockchain.last_block['previous_hash'], proof) is False:
+    #         proof += 1
 
-        return proof
+    #     return proof
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -87,18 +87,18 @@ class Blockchain(object):
 
 
     @staticmethod
-    def valid_proof(last_proof, proof):
+    def valid_proof(last_block_string, proof):
         """
         Validates the Proof:  Does hash(block_string, proof) contain 6
         leading zeroes?
         """
         #String to hash
-        guess = f'{last_proof}{proof}'.encode()
+        guess = f'{last_block_string}{proof}'.encode()
         #Hash string
         guess_hash = hashlib.sha256(guess).hexdigest()
         #check for 6 leading 0s
-        beg = guess_hash[:5]
-        return beg == '00000'
+        beg = guess_hash[:6]
+        return beg == '000000'
 
     def valid_chain(self, chain):
         """
@@ -138,8 +138,8 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     last_block = blockchain.last_block
-    last_proof = last_block['proof']
-    proof = blockchain.proof_of_work(last_proof)
+    last_block_string = last_block['previous_hash']
+
     
     values = request.get_json()
     submitted_proof = values.get('proof')
@@ -148,7 +148,7 @@ def mine():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    if blockchain.valid_proof(last_proof, submitted_proof):
+    if blockchain.valid_proof(last_block_string, submitted_proof):
         blockchain.new_transaction(
             sender='0',
             recipient=node_identifier,
@@ -201,13 +201,13 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/last_proof', methods=['GET'])
-def last_proof():
+@app.route('/last_block_string', methods=['GET'])
+def last_block_string():
     last_block = blockchain.last_block
-    last_proof = last_block['proof']
+    last_block_string = last_block['proof']
     response = {
         # TODO: Return the chain and its current length
-        'last_proof': f'{last_proof}'
+        'last_block_string': blockchain.last_block
 
     }
     return jsonify(response), 200
