@@ -19,7 +19,9 @@ class Blockchain(object):
 
     # def proof_of_work(self, last_block_string):
     #     proof = 0
-    #     while self.valid_proof(last_block_string, proof) is False:
+
+    #     while self.valid_proof(blockchain.last_block['previous_hash'], proof) is False:
+
     #         proof += 1
 
     #     return proof
@@ -138,7 +140,9 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     last_block = blockchain.last_block
-    last_proof = last_block['proof']
+
+    last_block_string = last_block['previous_hash']
+
 
     
     values = request.get_json()
@@ -148,7 +152,9 @@ def mine():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    if blockchain.valid_proof(blockchain.last_block, submitted_proof):
+
+    if blockchain.valid_proof(last_block_string, submitted_proof):
+
         blockchain.new_transaction(
             sender='0',
             recipient=node_identifier,
@@ -203,6 +209,10 @@ def full_chain():
 
 @app.route('/last_block_string', methods=['GET'])
 def last_block_string():
+
+    last_block = blockchain.last_block
+    last_block_string = last_block['proof']
+
     response = {
         # TODO: Return the chain and its current length
         'last_block_string': blockchain.last_block

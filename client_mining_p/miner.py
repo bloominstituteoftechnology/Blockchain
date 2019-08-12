@@ -45,7 +45,9 @@ if __name__ == '__main__':
     while True:
         r = requests.get(url = node +"/last_block_string")
         data = r.json()
-        last_block_string = data['last_block_string']
+
+        last_block_string = data['last_block_string']['previous_hash']
+
 
         new_proof = proof_of_work(last_block_string)
 
