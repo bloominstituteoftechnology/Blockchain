@@ -197,6 +197,7 @@ def mine():
  
     values = request.get_json()
     submitted_proof = values.get('proof')
+    submitted_id = values.get('id')
 
     required = ['proof']
     if not all(k in values for k in required):
