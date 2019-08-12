@@ -85,28 +85,18 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-<<<<<<< HEAD
     def proof_of_work(self, block):
-=======
-    def proof_of_work(self):
->>>>>>> 0d16be5cf9777d8b51c9942b5c2184f77b593acb
         """
         Simple Proof of Work Algorithm
         Find a number p such that hash(last_block_string, p) contains 6 leading
         zeroes
-<<<<<<< HEAD
         :return: A valid proof for the provided block
-=======
-        
-        :return: <int> A valid proof
->>>>>>> 0d16be5cf9777d8b51c9942b5c2184f77b593acb
         """
         # TODO
         pass
         # return proof
 
     @staticmethod
-<<<<<<< HEAD
     def valid_proof(block_string, proof):
         """
         Validates the Proof:  Does hash(block_string, proof) contain 6
@@ -117,15 +107,6 @@ class Blockchain(object):
         stringified previous block results in a hash that has the
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
-=======
-    def valid_proof(proof):
-        """
-        Validates the Proof:  Does hash(last_block_string, proof) contain 6
-        leading zeroes?
-        
-        :param proof: <string> The proposed proof
-        :return: <bool> Return true if the proof is valid, false if it is not
->>>>>>> 0d16be5cf9777d8b51c9942b5c2184f77b593acb
         """
         # TODO
         pass
