@@ -1,7 +1,17 @@
 import hashlib
 import requests
+import uuid
 
 import sys
+
+
+
+def load_id():
+    text_file = open('my_id.txt', 'r')
+    my_id = text_file.read().split(',')
+    text_file.close()
+    return my_id
+
 
 def proof_of_work(last_block_string):
     """
@@ -40,7 +50,18 @@ if __name__ == '__main__':
     else:
         node = "http://localhost:5000"
 
-    coins_mined = 0
+    if load_id()[0]:
+        userid = load_id()[0]
+    else:
+        print("Miner ID not found, creating Miner ID ...")
+        f = open("my_id.txt", "w")
+        userid = str(uuid.uuid1()).replace('-', '')
+        print("New Miner ID: " + userid)
+        f.write(userid+','+str(0))
+        f.close()
+        print('Miner ID: ', userid)
+
+    coins_mined = int(load_id()[1])
     # Run forever until interrupted
     while True:
         r = requests.get(url = node +"/last_block_string")
@@ -51,11 +72,18 @@ if __name__ == '__main__':
 
         new_proof = proof_of_work(last_block_string)
 
-        proof_data = {'proof': new_proof}
+        proof_data = {
+            "proof": new_proof,
+            "id": userid
+        }
 
         r = requests.post(url=node + "/mine", json=proof_data)
         print(r.json()['message'])
 
         if r.json()['message'] == 'New Block Forged':
             coins_mined += 1
-            print('Coins Mineds: ', coins_mined)
+            print('Coins Mined: ', coins_mined)
+            f = open("my_id.txt", "w")
+            f.write(userid+','+str(coins_mined))
+            f.close()
+  

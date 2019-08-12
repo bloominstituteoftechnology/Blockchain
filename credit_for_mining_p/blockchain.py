@@ -15,7 +15,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.gensis_block()
+        self.genesis_block()
 
     def genesis_block(self):
         block = {
