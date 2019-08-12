@@ -27,8 +27,8 @@ def valid_proof(last_block_string, proof):
     #Hash string
     guess_hash = hashlib.sha256(guess).hexdigest()
     #check for 6 leading 0s
-    beg = guess_hash[:5]
-    return beg == '00000'
+    beg = guess_hash[:6]
+    return beg == '000000'
 
 
 
@@ -45,7 +45,9 @@ if __name__ == '__main__':
     while True:
         r = requests.get(url = node +"/last_block_string")
         data = r.json()
-        last_block_string = data['last_block_string']
+
+        last_block_string = data['last_block_string']['previous_hash']
+
 
         new_proof = proof_of_work(last_block_string)
 
@@ -57,4 +59,3 @@ if __name__ == '__main__':
         if r.json()['message'] == 'New Block Forged':
             coins_mined += 1
             print('Coins Mineds: ', coins_mined)
-

@@ -1,4 +1,3 @@
-
 import hashlib
 import json
 from time import time
@@ -16,7 +15,7 @@ class Blockchain(object):
         self.current_transactions = []
         self.nodes = set()
 
-        self.genesis_block()
+        self.gensis_block()
 
     def genesis_block(self):
         block = {
@@ -29,12 +28,14 @@ class Blockchain(object):
 
         self.chain.append(block)
 
-    def proof_of_work(self, last_block_string):
-        proof = 0
-        while self.valid_proof(last_block_string, proof) is False:
-            proof += 1
+    # def proof_of_work(self, last_block_string):
+    #     proof = 0
 
-        return proof
+    #     while self.valid_proof(blockchain.last_block['previous_hash'], proof) is False:
+
+    #         proof += 1
+
+    #     return proof
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -58,6 +59,10 @@ class Blockchain(object):
 
         self.chain.append(block)
         return block
+
+    def add_block(self,block):
+        self.current_transactions = []
+        self.chain.append(block)
 
     def new_transaction(self, sender, recipient, amount):
         """
@@ -109,8 +114,8 @@ class Blockchain(object):
         #Hash string
         guess_hash = hashlib.sha256(guess).hexdigest()
         #check for 6 leading 0s
-        beg = guess_hash[:5]
-        return beg == '00000'
+        beg = guess_hash[:6]
+        return beg == '000000'
 
     def valid_chain(self, chain):
         """
@@ -150,8 +155,10 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     last_block = blockchain.last_block
-    last_proof = last_block['proof']
-    proof = blockchain.proof_of_work(last_proof)
+
+    last_block_string = last_block['previous_hash']
+
+
     
     values = request.get_json()
     submitted_proof = values.get('proof')
@@ -160,7 +167,9 @@ def mine():
     if not all(k in values for k in required):
         return 'Missing Values', 400
 
-    if blockchain.valid_proof(blockchain.last_block, submitted_proof):
+
+    if blockchain.valid_proof(last_block_string, submitted_proof):
+
         blockchain.new_transaction(
             sender='0',
             recipient=node_identifier,
@@ -215,6 +224,10 @@ def full_chain():
 
 @app.route('/last_block_string', methods=['GET'])
 def last_block_string():
+
+    last_block = blockchain.last_block
+    last_block_string = last_block['proof']
+
     response = {
         # TODO: Return the chain and its current length
         'last_block_string': blockchain.last_block
