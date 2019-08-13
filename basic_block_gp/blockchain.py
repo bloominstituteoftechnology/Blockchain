@@ -114,7 +114,8 @@ class Blockchain(object):
 
     def valid_chain(self, chain):
         """
-        Determine if a given blockchain is valid
+        Determine if a given blockchain is valid.  We'll need this
+        later when we are a part of a network.
 
         :param chain: <list> A blockchain
         :return: <bool> True if valid, False if not
