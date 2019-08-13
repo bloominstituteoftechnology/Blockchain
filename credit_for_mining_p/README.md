@@ -7,11 +7,11 @@ We've forgotten something important!  Miners want credit for the electricity the
 
 *Server*
 Modify the server we created to:
-* Receive an `id` from a `mine` request.
-* Record that ID as the `sender` in the transaction that creates the coin.
+X Receive an `id` from a `mine` request.
+X Record that ID as the `sender` in the transaction that creates the coin.
 
 *Client*
 Modify the client we created to:
-* Check for a file called `my_id`, open it if found, and load the ID
-* Otherwise, create a UUID ID, removing `-`s and save it to a the file
-* When a solution is found, send the ID in the POST as `id`
+X Check for a file called `my_id`, open it if found, and load the ID
+X Otherwise, create a UUID ID, removing `-`s and save it to a the file
+X When a solution is found, send the ID in the POST as `id`

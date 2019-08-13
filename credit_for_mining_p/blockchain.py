@@ -207,7 +207,7 @@ def mine():
     if blockchain.valid_proof(last_block_string, submitted_proof):
 
         blockchain.new_transaction(
-            sender='0',
+            sender=submitted_id,
             recipient=node_identifier,
             amount=1,
         )
