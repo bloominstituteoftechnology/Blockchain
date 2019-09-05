@@ -4,7 +4,20 @@ import requests
 import sys
 
 
-# TODO: Implement functionality to search for a proof 
+def proof_of_work(last_block_string):
+    proof = 0
+    while not valid_proof(last_block_string, proof):
+        proof += 1
+    return proof
+
+def valid_proof(last_proof, proof):
+    guess = f'{last_proof}{proof}'.encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    zeros = hash_guess[0:5]
+    if zeros == '00000':
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
