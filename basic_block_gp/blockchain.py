@@ -64,7 +64,6 @@ class Blockchain(object):
         "return": <str>
         """
 
-
         # json.dumps converts json into a string
         # hashlib.sha246 is used to createa hash
         # It requires a `bytes-like` object, which is what
@@ -78,7 +77,7 @@ class Blockchain(object):
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
         # hash to a string using hexadecimal characters, which is
-        # easer to work with and understand.  
+        # easer to work with and understand.
         return hashlib.sha256(block_string).hexdigest()
 
     @property
@@ -92,9 +91,15 @@ class Blockchain(object):
         zeroes
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
         # return proof
+
+        block_string = json.dumps(block, sort_keys=True).encode()
+
+        proof = 0
+
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -108,9 +113,13 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
-        # TODO
-        pass
+
         # return True or False
+
+        guess = f"{block_string}{proof}".encode()
+        hashed_guess = hashlib.sha256(guess).hexdigest()
+
+        return hashed_guess[:6] == "000000"
 
     def valid_chain(self, chain):
         """
@@ -130,10 +139,15 @@ class Blockchain(object):
             print(f'{block}')
             print("\n-------------------\n")
             # Check that the hash of the block is correct
-            # TODO: Return false if hash isn't correct
+            if block["previous_hash"] != self.hash(prev_block):
+                print(f"Invalid previous hash {current_index}")
+                return False
 
             # Check that the Proof of Work is correct
-            # TODO: Return false if proof isn't correct
+            block_string = json.dumps(prev_block, sort_keys=True).encode()
+            if not self.valid_proof(block_string, block["proof"]):
+                print(f"Invalid proof on block {current_index}")
+                return False
 
             prev_block = block
             current_index += 1
@@ -154,17 +168,22 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    proof = blockchain.proof_of_work()
+    proof = blockchain.proof_of_work(blockchain.last_block)
 
     # We must receive a reward for finding the proof.
-    # TODO:
+
     # The sender is "0" to signify that this node has mine a new coin
     # The recipient is the current node, it did the mining!
     # The amount is 1 coin as a reward for mining the next block
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
 
     # Forge the new Block by adding it to the chain
-    # TODO
-
+    previous_hash = blockchain.hash(blockchain.last_block)
+    block = blockchain.new_block(proof, previous_hash)
     # Send a response with the new block
     response = {
         'message': "New Block Forged",
@@ -197,11 +216,20 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        "chain": blockchain.chain
     }
     return jsonify(response), 200
 
 
-# Run the program on port 5000
+@app.route('/valid_chain', methods=['GET'])
+def validate_chain():
+    result = blockchain.valid_chain(blockchain.chain)
+
+    response = {
+        "validity": result
+    }
+    return jsonify(response), 200
+
+    # Run the program on port 5000
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
