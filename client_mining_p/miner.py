@@ -64,7 +64,7 @@ if __name__ == '__main__':
         r_mine = requests.post(url=node+"/mine", json=post_data)
         data = r_mine.json()
         #print(data)
-
+        coins_mined += 1
 
         # HINT: Research `requests` and remember we're sending our data as JSON
         # TODO: If the server responds with 'New Block Forged'

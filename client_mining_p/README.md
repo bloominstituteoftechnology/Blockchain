@@ -17,11 +17,11 @@ Modify the server we created to:
 
 *Client Mining*
 Create a client application that will:
-* Request the latest block from the `last_block` endpoint on the server
-* Run the `proof_of_work` function until a valid proof is found, validating or rejecting each attempt
+****** Request the latest block from the `last_block` endpoint on the server
+****** Run the `proof_of_work` function until a valid proof is found, validating or rejecting each attempt
 * Print messages indicating that this has started and finished.  (Stretch: Add a timer)
 * Modify it to generate proofs with *6* leading zeroes.
-* When a valid proof is found, send it to the `mine` endpoint.  
+***** When a valid proof is found, send it to the `mine` endpoint.  
 * Print a message indicating the success or failure response from the server
 * Add any coins granted to a simple integer total, and print the amount of coins the client has earned
-* Continue mining until the app is interrupted.
+****** Continue mining until the app is interrupted.
