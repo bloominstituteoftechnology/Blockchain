@@ -19,7 +19,7 @@ def proof_of_work(last_proof):
     """
     Simple Proof of Work Algorithm
     - Find a number p' such that hash(pp') contains 6 leading
-    zeroes, where p is the previous p'
+    zeroes, where p is the previous p
     - p is the previous proof, and p' is the new proof
     """
 
@@ -39,6 +39,7 @@ def valid_proof(last_proof, proof):
     """
     guess = f'{last_proof}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
+    breakpoint()
     return guess_hash[:6] == "000000"
 
 if __name__ == '__main__':

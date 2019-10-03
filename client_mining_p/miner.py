@@ -60,6 +60,7 @@ if __name__ == '__main__':
         # requests.post to /mine endpoint
         r = requests.post(url=node + '/mine', json=proof_data)
         print(r.json()['message'])
+        print('63', data)
 
         if r.json()['message'] == 'New Block Forged':
             coins_mined += 1
