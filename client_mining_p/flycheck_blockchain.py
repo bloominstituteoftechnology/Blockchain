@@ -86,20 +86,20 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, block):
-        """
-        Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
-        zeroes
-        :return: A valid proof for the provided block
-        """
-        block_string = json.dumps(block, sort_keys=True).encode()
+    #def proof_of_work(self, block):
+    #    """
+    #    Simple Proof of Work Algorithm
+    #    Find a number p such that hash(last_block_string, p) contains 6 leading
+    #    zeroes
+    #    :return: A valid proof for the provided block
+    #    """
+    #    block_string = json.dumps(block, sort_keys=True).encode()#
 
-        proof = 0
-        while not self.valid_proof(block_string, proof):
-            proof += 1
+    #    proof = 0
+    #    while not self.valid_proof(block_string, proof):
+    #        proof += 1
 
-        return proof
+    #    return proof
 
         
     @staticmethod
@@ -169,10 +169,23 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['POST'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    proof = blockchain.proof_of_work(blockchain.last_block)
+    # proof = blockchain.proof_of_work(blockchain.last_block)
+    last_block = blockchain.last_block
+    last_block_string = json.dumps(last_block, sort_keys=True).encode()
+
+    values = request.get_json()
+
+    submitted_proof = values['proof']
+    
+    if not blockchain.valid_proof(last_block_string, submitted_proof):
+        response = {
+            # TODO: send diefferent message if proof was valid but late.
+            'message': 'proof was invalid or submitted too late'
+        }
+        return jsonify(response, 200)
 
     # We must receive a reward for finding the proof.
 
@@ -248,4 +261,4 @@ def get_last_block():
     
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003)
+    app.run(host='0.0.0.0', port=500)

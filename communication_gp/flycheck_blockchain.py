@@ -3,7 +3,8 @@ import json
 from time import time
 from uuid import uuid4
 import sys
-
+from urllib.parse import urlparse
+import requests
 from flask import Flask, jsonify, request
 
 
@@ -14,6 +15,18 @@ class Blockchain(object):
         self.nodes = set()
 
         self.new_block(previous_hash=1, proof=100)
+
+    def create_genesis_block(self):
+        """ create the genesis block """
+        block = {
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': [],
+            'proof': 1,
+            'previous_hash': 1
+        }
+
+        self.chain.append(block)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -56,6 +69,10 @@ class Blockchain(object):
 
         return self.last_block['index'] + 1
 
+    def register_node(self, node):
+        parsed_url = urlparse(node)
+        self.nodes.add(parsed_url.netloc)
+
     @staticmethod
     def hash(block):
         """
@@ -82,24 +99,44 @@ class Blockchain(object):
         # easer to work with and understand.  
         return hashlib.sha256(block_string).hexdigest()
 
+    def broadcast_new_block(self, block):
+        """ alert neighbors that a new block has beenn mined and they should add it to their chain as well """
+        neighbors = self.nodes
+        post_data = {"block": block}
+
+        for node in neighbors:
+            response = requests.post(f"http://{node}/block/new", json=post_data)
+
+            if response.status_code != 200:
+                # error handling
+                pass
+    
+    def add_block(self, block):
+        """ add a validated received block to the end of hte chain"""
+        # reset pending transactions
+        self.current_transactions = []
+
+        self.chain.append(block)
+
+        
     @property
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, block):
-        """
-        Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
-        zeroes
-        :return: A valid proof for the provided block
-        """
-        block_string = json.dumps(block, sort_keys=True).encode()
+    #def proof_of_work(self, block):
+    #    """
+    #    Simple Proof of Work Algorithm
+    #    Find a number p such that hash(last_block_string, p) contains 6 leading
+    #    zeroes
+    #    :return: A valid proof for the provided block
+    #    """
+    #    block_string = json.dumps(block, sort_keys=True).encode()#
 
-        proof = 0
-        while not self.valid_proof(block_string, proof):
-            proof += 1
+    #    proof = 0
+    #    while not self.valid_proof(block_string, proof):
+    #        proof += 1
 
-        return proof
+    #    return proof
 
         
     @staticmethod
@@ -169,10 +206,23 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['POST'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
-    proof = blockchain.proof_of_work(blockchain.last_block)
+    # proof = blockchain.proof_of_work(blockchain.last_block)
+    last_block = blockchain.last_block
+    last_block_string = json.dumps(last_block, sort_keys=True).encode()
+
+    values = request.get_json()
+
+    submitted_proof = values['proof']
+    
+    if not blockchain.valid_proof(last_block_string, submitted_proof):
+        response = {
+            # TODO: send diefferent message if proof was valid but late.
+            'message': 'proof was invalid or submitted too late'
+        }
+        return jsonify(response, 200)
 
     # We must receive a reward for finding the proof.
 
@@ -245,7 +295,86 @@ def get_last_block():
     }
 
     return jsonify(response, 200)
-    
-# Run the program on port 5000
+
+@app.route('/block/new', methods=['POST'])
+def new_block():
+    values = request.get_json()
+
+    # Check that the required fields are in the POST'ed data
+    required = ['block']
+    if not all(k in values for k in required):
+        return 'Missing Values', 400
+
+    # TODO: Verify that the sender is one of our peers
+
+    # TODO: Check that the new block index is 1 higher than our last block
+    # that it has a valid proof
+
+    # TODO: Otherwise, check for consensus
+    # Don't forget to send a response before asking for the full
+    # chain from a server awaiting a response.
+
+    return response, 200
+
+@app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+
+    values = request.get_json()
+    nodes = values.get('nodes')
+    if nodes is None:
+        return "Error: Please supply a valid list of nodes", 400
+
+    for node in nodes:
+        blockchain.register_node(node)
+
+    response = {
+        'message': 'New nodes have been added',
+        'total_nodes': list(blockchain.nodes),
+    }
+    return jsonify(response), 201
+
+@app.route("/block/new", methods=['POST'])
+def receive_block():
+    values = requests.get_json()
+   
+    new_block = values['block']
+
+    old_block = blockchain.last_block
+
+    if new_block['index'] == oldblock['index'] + 1:
+        # index is correct
+        if new_block['previous_hash'] == blockchain.hash(old_block):
+            # hashes are correct
+            block_string = json.dumps(old_block, sort_keys=True).encode()
+            if blockchain.valid_proof(block_string, new_block['proof']):
+                # proof is valid
+                blockchain.add_block(new_block)
+                return "Block accepted"
+            else:
+                # bad proof, handle case
+                pass
+        else:
+            # hashes don't match, handle error
+            pass
+    else:
+        # their index is one greater
+        # block could be invalid
+        # we could be behind
+        #
+        #do consense process:
+        # # poll all nodes in chain and get biggest one:
+        pass
+
+# TODO: Get rid of the previous if __main__ and use this so we can change
+# ports via the command line.  Note that this is not robust and will
+# not catch errors
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5003)
+    if len(sys.argv) > 1:
+        port = int(sys.argv[1])
+    else:
+        port = 5000
+    app.run(host='0.0.0.0', port=port)
+
+# # Run the program on port 5000
+# if __name__ == '__main__':
+#    app.run(host='0.0.0.0', port=5000)
