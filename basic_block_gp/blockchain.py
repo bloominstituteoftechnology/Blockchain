@@ -134,6 +134,8 @@ class Blockchain(object):
         prev_block = chain[0]
         current_index = 1
 
+        # TODO: unable to test implementation. test when possible.
+
         while current_index < len(chain):
             block = chain[current_index]
             print(f'{prev_block}')
@@ -141,9 +143,16 @@ class Blockchain(object):
             print("\n-------------------\n")
             # Check that the hash of the block is correct
             # TODO: Return false if hash isn't correct
+            if block.previous_hash != self.hash(prev_block):
+                sys.stdout.write("invalid previous hash... ")
+                return False
 
             # Check that the Proof of Work is correct
             # TODO: Return false if proof isn't correct
+            block_string = json.dumps(prev_block, sort_keys=True).encode()
+            if not self.valid_proof(block_string, block.proof):
+                print(f"found invalid proof on block {current_index}")
+                return False
 
             prev_block = block
             current_index += 1
@@ -215,7 +224,7 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'chain': blockchain.chain
     }
     return jsonify(response), 200
 
