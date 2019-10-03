@@ -107,4 +107,4 @@ venv.bak/
 my_id.txt
 
 #vscode local settings
-.vscode/settings.json
+.vscode/
