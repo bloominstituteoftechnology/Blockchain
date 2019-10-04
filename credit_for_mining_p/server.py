@@ -17,8 +17,8 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['POST'])
-def mine():
+@app.route('/mine/<node_id>', methods=['POST'])
+def mine(node_id):
     # We run the proof of work algorithm to get the next proof...
     # proof = blockchain.proof_of_work(blockchain.last_block)
     last_block = blockchain.last_block
@@ -42,7 +42,7 @@ def mine():
     # The amount is 1 coin as a reward for mining the next block
     blockchain.new_transaction(
         sender = "0",
-        recipient = node_identifier,
+        recipient = node_id,
         amount = 1
     )
 

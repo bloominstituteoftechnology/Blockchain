@@ -1,3 +1,4 @@
+"""client """
 import hashlib
 import requests
 import json
@@ -40,6 +41,9 @@ def proof_of_work(block):
 
 # TODO: Implement functionality to search for a proof 
 
+# Generate a globally unique address for this node
+node_identifier = "Inverba"#  str(uuid4()).replace('-', '')
+
 
 if __name__ == '__main__':
     # What node are we interacting with?
@@ -61,8 +65,8 @@ if __name__ == '__main__':
         new_proof = proof_of_work(last_block['last_block'])
         print(f"found proof and submitting it: {new_proof}")
         post_data = {"proof": new_proof}
-        r_mine = requests.post(url=node+"/mine", json=post_data)
-        data = r_mine.json()
+        r_mine = requests.post(url=f"{node}/mine/{node_identifier}", json=post_data)
+        #data = r_mine.json()
         #print(data)
         coins_mined += 1
 
