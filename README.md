@@ -16,4 +16,5 @@ https://imgur.com/xSlgvtl
 ### Day 2 Take Home Project
 * Transactions/Credit for Mining (credit_for_mining_p)
 
+
 Based on blockchain by dvf.  Used under MIT license:  https://github.com/dvf/blockchain
