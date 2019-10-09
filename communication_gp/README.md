@@ -11,7 +11,7 @@ Be sure to review their code!
 
 *Server*
 Modify the server we created to:
-* Hard code the genesis block so that all servers using this code can share a chain
+**** Hard code the genesis block so that all servers using this code can share a chain
 * Add a method to `Blockchain` and use it so that when a new block is mined, the server alerts all nodes in its list of registered nodes to add the new block
 * Complete the endpoint to receive a new block from one of the nodes in its list of registered nodes, *validate it*, and add it to the chain
 * Validate the new block by checking the index, previous hash, and proof
