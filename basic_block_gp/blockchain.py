@@ -85,7 +85,7 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, block):
+    def proof_of_work(self):
         """
         Simple Proof of Work Algorithm
         Find a number p such that hash(last_block_string, p) contains 6 leading
@@ -93,7 +93,12 @@ class Blockchain(object):
         :return: A valid proof for the provided block
         """
         # TODO
-        pass
+        block_string = json.dumps(self.last_block, sort_keys=True).encode()
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+
+        return proof
         # return proof
 
     @staticmethod
@@ -109,7 +114,9 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
+        guess = f'{block_string}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
         # return True or False
 
     def valid_chain(self, chain):
@@ -158,12 +165,15 @@ def mine():
 
     # We must receive a reward for finding the proof.
     # TODO:
+    blockchain.new_transaction(sender="0", recipient=node_identifier, amount=1)
     # The sender is "0" to signify that this node has mine a new coin
     # The recipient is the current node, it did the mining!
     # The amount is 1 coin as a reward for mining the next block
 
     # Forge the new Block by adding it to the chain
     # TODO
+    previous_hash = blockchain.hash(blockchain.last_block)
+    block = blockchain.new_block(proof,previous_hash)
 
     # Send a response with the new block
     response = {
@@ -173,6 +183,7 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
     }
+
     return jsonify(response), 200
 
 
@@ -197,7 +208,7 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        "chain" : blockchain.chain
     }
     return jsonify(response), 200
 
