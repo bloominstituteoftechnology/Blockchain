@@ -28,7 +28,7 @@ class Blockchain(object):
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'previous_hash': previous_hash or self.hash(self.chain[-1]), #self.chain[-1] gives last block in chain
         }
 
         # Reset the current list of transactions
@@ -88,7 +88,7 @@ class Blockchain(object):
     def proof_of_work(self):
         """
         Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
+        Find a number p such that ha contains 6 leading
         zeroes
         :return: A valid proof for the provided block
         """
