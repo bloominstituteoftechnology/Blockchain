@@ -66,7 +66,7 @@ class Blockchain(object):
 
 
         # json.dumps converts json into a string
-        # hashlib.sha246 is used to createa hash
+        # hashlib.sha246 is used to create a hash
         # It requires a `bytes-like` object, which is what
         # .encode() does.  It convertes the string to bytes.
         # We must make sure that the Dictionary is Ordered,
