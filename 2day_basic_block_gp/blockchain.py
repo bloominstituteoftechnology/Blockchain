@@ -39,7 +39,6 @@ class Blockchain(object):
         # Return the new block
         pass
 
-    @staticmethod
     def hash(block):
         """
         Creates a SHA-256 hash of a Block
