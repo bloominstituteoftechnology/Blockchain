@@ -58,13 +58,13 @@ class Blockchain(object):
 
         # TODO: Create the block_string
 
-
         # TODO: Hash this string using sha256
+
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
-        # hash to a string using hexadecimal characters, which is
-        # easer to work with and understand
+        # hash to a string of hexadecimal characters, which is
+        # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
         pass
@@ -76,7 +76,7 @@ class Blockchain(object):
     def proof_of_work(self, block):
         """
         Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
+        Find a number p such that hash(last_block_string, p) contains 3 leading
         zeroes
         :return: A valid proof for the provided block
         """
@@ -87,7 +87,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof(block_string, proof):
         """
-        Validates the Proof:  Does hash(block_string, proof) contain 6
+        Validates the Proof:  Does hash(block_string, proof) contain 3
         leading zeroes?  Return true if the proof is valid
         :param block_string: <string> The stringified block to use to
         check in combination with `proof`
@@ -113,12 +113,9 @@ blockchain = Blockchain()
 
 @app.route('/mine', methods=['GET'])
 def mine():
-    # We run the proof of work algorithm to get the next proof...
+    # Run the proof of work algorithm to get the next proof
 
-    
-
-    # Forge the new Block by adding it to the chain
-    # TODO
+    # Forge the new Block by adding it to the chain with the proof
 
     response = {
         # TODO: Send a JSON response with the new block
@@ -133,21 +130,6 @@ def full_chain():
         # TODO: Return the chain and its current length
     }
     return jsonify(response), 200
-
-
-@app.route('/transactions/new', methods=['POST'])
-def new_transaction():
-    values = request.get_json()
-
-    # Check that the required fields are in the POST'ed data
-
-    # Create a new Transaction
-
-    response = {
-        # TODO: Return a response with the block that will have the
-        # transaction, in JSON format
-    }
-    return jsonify(response), 201
 
 
 # Run the program on port 5000
