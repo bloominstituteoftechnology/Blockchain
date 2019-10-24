@@ -75,8 +75,9 @@ class Blockchain(object):
     def proof_of_work(self, block):
         """
         Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 3 leading
-        zeroes
+        Stringify the block and look for a proof.
+        Loop through possibilities, checking each one against `valid_proof`
+        in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
         # TODO
