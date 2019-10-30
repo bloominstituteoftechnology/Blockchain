@@ -144,6 +144,15 @@ class Blockchain(object):
             print("\n-------------------\n")
             # Check that the hash of the block is correct
             # TODO: Return false if hash isn't correct
+            if block['previous_hash'] != self.hash(prev_block):
+                print(f"invalid previous hash on block {current_index}")
+                return false
+
+            block_string = json.dumps(prev_block, sort_keys=True).encode()
+            if not self.valid_proof(block_string, block[proof]):
+                print(f"invalid previous hash on block {current_index}")
+                return false
+
 
             # Check that the Proof of Work is correct
             # TODO: Return false if proof isn't correct
@@ -215,10 +224,18 @@ def new_transaction():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'chain': blockchain.chain
     }
     return jsonify(response), 200
 
+@app.route('/valid_chain', methods=['GET'])
+def validate_chain():
+    result = blockchain.valid_chain(blockchain.chain) 
+
+    response ={
+        'validity': result
+    }
+    return jsonify(response), 300
 
 # Run the program on port 5000
 if __name__ == '__main__':
