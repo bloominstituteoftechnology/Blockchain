@@ -50,7 +50,7 @@ class Blockchain(object):
         # Return the new block
         return block
 
-    def hash(block):
+    def hash(self, block):
         """
         Creates a SHA-256 hash of a Block
 
@@ -121,7 +121,7 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess).hexdigest()
         
         # return True or False
-        return guess_hash[:3] == "000"
+        return guess_hash[:5] == "00000"
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -136,7 +136,7 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
 
-    value = request.get_json()
+    values = request.get_json()
     required = ['proof', 'id']
 
     if not all(k in values for k in required):
@@ -149,8 +149,9 @@ def mine():
     last_block_string = json.dumps(last_block, sort_keys=True)
 
     if blockchain.valid_proof(last_block_string, submitted_proof):
-        # Forge the new Block by adding it to the chain with the proof
+        # # Forge the new Block by adding it to the chain with the proof
         previous_hash = blockchain.hash(last_block)
+        print(previous_hash)
         block = blockchain.new_block(submitted_proof, previous_hash)
         response = {
             'message': "New Block Forged",
@@ -180,7 +181,7 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/last_block', methods=['POST'])
+@app.route('/last_block', methods=['GET'])
 def last_block():
     response = {
         'last_block': blockchain.last_block
@@ -189,4 +190,4 @@ def last_block():
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='localhost', port=5000)
