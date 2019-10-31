@@ -1,8 +1,6 @@
 # Paste your version of blockchain.py from the client_mining_p
 # folder here
 
-# Paste your version of blockchain.py from the basic_block_gp
-# folder here
 import hashlib
 import json
 from time import time
@@ -94,24 +92,6 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    # def proof_of_work(self):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     Stringify the block and look for a proof.
-    #     Loop through possibilities, checking each one against `valid_proof`
-    #     in an effort to find a number that is a valid proof
-    #     :return: A valid proof for the provided block
-    #     """
-    #     # TODO
-    #     # pass
-        # string_object = json.dumps(self.last_block, sort_keys=True)
-        # block_string = string_object.encode()
-        # proof = 0
-        # while self.valid_proof(block_string, proof) is False:
-        #     proof += 1
-
-        # return proof
-
     @staticmethod
     def valid_proof(block_string, proof):
         """
@@ -130,6 +110,12 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:3] == "000"
         # return True or False
+
+    @staticmethod
+    def new_transaction(self, sender, recipient, amount):
+        self.current_transactions.append(
+            {'sender': sender, 'recipient': recipient, 'amount': amount})
+        return self.last_block['index'] + 1
 
 
 # Instantiate our Node
@@ -150,35 +136,33 @@ def mine():
     data = request.get_json()
     print('====+++====', data.get('proof'))
     required_fields = ['proof', 'id']
-    if not all (k in data for k in required_fields):
+    if not all(k in data for k in required_fields):
         return jsonify({
             'message': 'You need to pass in an Id and proof'
         }), 400
-    
+
      # get the submitted proof from the values data
     submitted_proof = data.get('proof')
-    # determine if the proof is valid
-    # if not data['id'] and not data['proof']:
-    #     return jsonify({
-    #         'message': 'You need to pass in an Id and proof'
-    #     }), 400
+    last_block_string = json.dumps(
+        blockchain.last_block, sort_keys=True).encode()
 
-    
-    last_block_string = json.dumps(blockchain.last_block, sort_keys=True).encode()
-
-    proof_valididty = blockchain.valid_proof(last_block_string, submitted_proof)
+    proof_valididty = blockchain.valid_proof(
+        last_block_string, submitted_proof)
 
     if proof_valididty:
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(submitted_proof, previous_hash)
 
+        # reward miner for guessing proof
+        blockchain.new_transaction(
+            sender="0", recipient=node_identifier, amount=1)
         response = {
-        # TODO: Send a JSON response with the new block
-        'message': 'Newly Forged Block',
-        'index': block['index'],
-        'transactions': block['transactions'],
-        'proof': block['proof'],
-        'previous_hash': block['previous_hash'],
+            # TODO: Send a JSON response with the new block
+            'message': 'Newly Forged Block',
+            'index': block['index'],
+            'transactions': block['transactions'],
+            'proof': block['proof'],
+            'previous_hash': block['previous_hash'],
         }
 
         return jsonify(response), 200
@@ -222,6 +206,28 @@ def last_block():
         'last_block': blockchain.last_block
     }
     return jsonify(response), 200
+
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    # get the values in json format
+    data = request.get_json()
+    # check that the required fields exist
+    required_fields = ['sender', 'recipient', 'amount']
+
+    if not all(k in data for k in required_fields):
+        return jsonify({
+            'message': 'You need to pass in all required fields'
+        }), 400
+
+    # create a new transaction
+    index = blockchain.new_transaction(
+        data['sender'], data['recipient'], data['amount'])
+
+    # set the response object with a message that the transaction will be added at the index
+    response = {'message': f'Transaction will be added to Block {index}'}
+    # return the response
+    return jsonify(response), 201
 
 
 # Run the program on port 5000
