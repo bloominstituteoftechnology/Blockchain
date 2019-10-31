@@ -101,13 +101,13 @@ class Blockchain(object):
     #     """
     #     # TODO
     #     # pass
-    #     string_object = json.dumps(self.last_block, sort_keys=True)
-    #     block_string = string_object.encode()
-    #     proof = 0
-    #     while self.valid_proof(block_string, proof) is False:
-    #         proof += 1
+        # string_object = json.dumps(self.last_block, sort_keys=True)
+        # block_string = string_object.encode()
+        # proof = 0
+        # while self.valid_proof(block_string, proof) is False:
+        #     proof += 1
 
-    #     return proof
+        # return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -125,7 +125,7 @@ class Blockchain(object):
         # pass
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:6] == "000000"
+        return guess_hash[:3] == "000"
         # return True or False
 
 
@@ -139,24 +139,67 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['POST'])
 def mine():
-    # Run the proof of work algorithm to get the next proof
-    proof = blockchain.proof_of_work()
-    # Forge the new Block by adding it to the chain with the proof
-    previous_hash = blockchain.hash(blockchain.last_block)
-    block = blockchain.new_block(proof, previous_hash)
+    '''handle non json responses
+    and check that the required fields are in the posted data
+    '''
+    data = request.get_json()
+    print('====+++====', data.get('proof'))
+    required_fields = ['proof', 'id']
+    if not all (k in data for k in required_fields):
+        return jsonify({
+            'message': 'You need to pass in an Id and proof'
+        }), 400
+    
+     # get the submitted proof from the values data
+    submitted_proof = data.get('proof')
+    # determine if the proof is valid
+    # if not data['id'] and not data['proof']:
+    #     return jsonify({
+    #         'message': 'You need to pass in an Id and proof'
+    #     }), 400
 
-    response = {
+    
+    last_block_string = json.dumps(blockchain.last_block, sort_keys=True).encode()
+
+    proof_valididty = blockchain.valid_proof(last_block_string, submitted_proof)
+
+    if proof_valididty:
+        previous_hash = blockchain.hash(blockchain.last_block)
+        block = blockchain.new_block(submitted_proof, previous_hash)
+
+        response = {
         # TODO: Send a JSON response with the new block
         'message': 'Newly Forged Block',
         'index': block['index'],
         'transactions': block['transactions'],
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
-    }
+        }
 
-    return jsonify(response), 200
+        return jsonify(response), 200
+    else:
+        return jsonify({
+            'message': 'invalid proof'
+        }), 200
+
+    # Run the proof of work algorithm to get the next proof
+    # proof = blockchain.proof_of_work()
+    # Forge the new Block by adding it to the chain with the proof
+    # previous_hash = blockchain.hash(blockchain.last_block)
+    # block = blockchain.new_block(proof, previous_hash)
+
+    # response = {
+    #     # TODO: Send a JSON response with the new block
+    #     'message': 'Newly Forged Block',
+    #     'index': block['index'],
+    #     'transactions': block['transactions'],
+    #     'proof': block['proof'],
+    #     'previous_hash': block['previous_hash'],
+    # }
+
+    # return jsonify(response), 200
 
 
 @app.route('/chain', methods=['GET'])
@@ -173,7 +216,7 @@ def full_chain():
 def last_block():
     response = {
         'length of blockchain': len(blockchain.chain),
-        'last block': blockchain.last_block
+        'last_block': blockchain.last_block
     }
     return jsonify(response), 200
 
