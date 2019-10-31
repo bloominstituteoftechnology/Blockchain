@@ -10,3 +10,5 @@ This app should:
 Stretch Goals:
     * Use styling to visually distinguish coins sent and coins received
     * Paginate the list of transactions if there are more than ten
+
+    

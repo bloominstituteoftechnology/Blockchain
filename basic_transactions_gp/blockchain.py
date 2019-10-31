@@ -172,7 +172,7 @@ def new_transaction():
     index = blockchain.new_transaction(
         data['sender'], data['recipient'], data['amount'])
 
-    response = {'message': f'transaction will be added to blocl {index}'}
+    response = {'message': f'transaction will be added to block {index}'}
     return jsonify({response}), 200
 
 
