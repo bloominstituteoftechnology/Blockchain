@@ -3,6 +3,7 @@ import json
 from time import time
 from uuid import uuid4
 from flask import Flask, jsonify, request
+
 class Blockchain(object):
     def __init__(self):
         self.chain = []
@@ -79,7 +80,7 @@ class Blockchain(object):
             proof += 1
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return proof
+        return proof, guess_hash
     @staticmethod
     def valid_proof(block_string, proof):
         """
@@ -105,9 +106,9 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
-    proof = blockchain.proof_of_work(blockchain.last_block)
+    proof, previous_hash = blockchain.proof_of_work(blockchain.last_block)
     # Forge the new Block by adding it to the chain with the proof
-    previous_hash = blockchain.hash(blockchain.last_block)
+    # previous_hash = blockchain.hash(blockchain.last_block)
     block = blockchain.new_block(proof, previous_hash)
     response = {
         'message': "New Block Forged",
