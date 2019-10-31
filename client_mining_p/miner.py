@@ -3,7 +3,12 @@ import requests
 
 import sys
 import json
+import os
 
+cwd = os.getcwd()  # Get the current working directory (cwd)
+files = os.listdir(cwd)  # Get all the files in that directory
+print("Files in %r: %s" % (cwd, files))
+os.chdir(r"client_mining_p")
 
 def proof_of_work(block):
     """

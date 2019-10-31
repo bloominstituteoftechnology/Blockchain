@@ -91,23 +91,23 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self):
-        """
-        Simple Proof of Work Algorithm
-        Stringify the block and look for a proof.
-        Loop through possibilities, checking each one against `valid_proof`
-        in an effort to find a number that is a valid proof
-        :return: A valid proof for the provided block
-        """
-        # TODO
-        # pass
-        string_object = json.dumps(self.last_block, sort_keys=True)
-        block_string = string_object.encode()
-        proof = 0
-        while self.valid_proof(block_string, proof) is False:
-            proof += 1
+    # def proof_of_work(self):
+    #     """
+    #     Simple Proof of Work Algorithm
+    #     Stringify the block and look for a proof.
+    #     Loop through possibilities, checking each one against `valid_proof`
+    #     in an effort to find a number that is a valid proof
+    #     :return: A valid proof for the provided block
+    #     """
+    #     # TODO
+    #     # pass
+    #     string_object = json.dumps(self.last_block, sort_keys=True)
+    #     block_string = string_object.encode()
+    #     proof = 0
+    #     while self.valid_proof(block_string, proof) is False:
+    #         proof += 1
 
-        return proof
+    #     return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -125,7 +125,7 @@ class Blockchain(object):
         # pass
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:3] == "000"
+        return guess_hash[:6] == "000000"
         # return True or False
 
 
@@ -165,6 +165,15 @@ def full_chain():
         # TODO: Return the chain and its current length
         'length': len(blockchain.chain),
         'chain': blockchain.chain
+    }
+    return jsonify(response), 200
+
+
+@app.route('/last_block', methods=['GET'])
+def last_block():
+    response = {
+        'length of blockchain': len(blockchain.chain),
+        'last block': blockchain.last_block
     }
     return jsonify(response), 200
 
