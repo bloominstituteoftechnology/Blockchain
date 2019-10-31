@@ -52,6 +52,12 @@ class Blockchain(object):
         self.chain.append(block)
         return block
 
+    def new_transaction(self, sender, recipient, amount):
+        self.current_transactions.append(
+            {'sender': sender, 'recipient': recipient, 'amount': amount})
+        return self.last_block['index'] + 1
+
+
     @staticmethod
     def hash(block):
         """
@@ -111,12 +117,7 @@ class Blockchain(object):
         return guess_hash[:3] == "000"
         # return True or False
 
-    @staticmethod
-    def new_transaction(self, sender, recipient, amount):
-        self.current_transactions.append(
-            {'sender': sender, 'recipient': recipient, 'amount': amount})
-        return self.last_block['index'] + 1
-
+    
 
 # Instantiate our Node
 app = Flask(__name__)
