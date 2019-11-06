@@ -7,6 +7,7 @@ from time import time
 from uuid import uuid4
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 
 class Blockchain(object):
@@ -121,6 +122,7 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app)
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -135,7 +137,6 @@ def mine():
     and check that the required fields are in the posted data
     '''
     data = request.get_json()
-    print('====+++====', data.get('proof'))
     required_fields = ['proof', 'id']
     if not all(k in data for k in required_fields):
         return jsonify({
