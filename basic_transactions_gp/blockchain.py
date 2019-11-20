@@ -1,10 +1,9 @@
-# Paste your version of blockchain.py from the basic_block_gp
-# folder here
 import hashlib
 import json
 from time import time
 from uuid import uuid4
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 
 class Blockchain(object):
@@ -41,6 +40,11 @@ class Blockchain(object):
         # Return the new block
         return block
 
+    def new_transaction(self, sender, recipient, amount):
+        self.current_transactions.append(
+            {'sender': sender, 'recipient': recipient, 'amount': amount})
+        return self.last_block['index'] + 1
+
     def hash(self, block):
         """
         Creates a SHA-256 hash of a Block
@@ -55,8 +59,9 @@ class Blockchain(object):
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
         # TODO: Create the block_string
+        # stringify's the "block" into 1 string, and sorts the keys in an "order"
         string_object = json.dumps(block, sort_keys=True)
-        block_string = string_object.encode()
+        block_string = string_object.encode()  # changes string to "byte-like" object
         # TODO: Hash this string using sha256
         raw_hash = hashlib.sha256(block_string)
         hex_hash = raw_hash.hexdigest()
@@ -86,10 +91,9 @@ class Blockchain(object):
     #         proof += 1
     #     guess = f'{block_string}{proof}'.encode()
     #     guess_hash = hashlib.sha256(guess).hexdigest()
-    #     return proof
-    # @staticmethod
-
-    def valid_proof(self, block_string, proof):
+    #     return proof, guess_hash
+    @staticmethod
+    def valid_proof(block_string, proof):
         """
         Validates the Proof:  Does hash(block_string, proof) contain 3
         leading zeroes?  Return true if the proof is valid
@@ -100,80 +104,55 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
+        # "01234""5" => "012345"
+        # "blockstring""proof" => "blockstring100"
         guess = f'{block_string}{proof}'.encode()
-        guess_hash = hashlib.sha256(guess).hexdigest()
+        guess_hash = hashlib.sha256(guess).hexdigest()  # "0000678"
         # return True or False
-        return guess_hash[:6] == "000000"
-
-
-def new_transaction(self, sender, recipient, amount):
-    transaction = {
-        'sender': sender,
-        'recipient': amount,
-        'amount': amount
-    }
-    self.current_transactions.append(transaction)
-    return self.last_block['index'] + 1
+        return guess_hash[:5] == "00000"
 
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app)
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
-
-
 @app.route('/mine', methods=['POST'])
 def mine():
-    # # Run the proof of work algorithm to get the next proof
-    # proof = blockchain.proof_of_work(blockchain.last_block)
-    # # Forge the new Block by adding it to the chain with the proof
+    # Run the proof of work algorithm to get the next proof
+    # proof, previous_hash = blockchain.proof_of_work(blockchain.last_block)
+    # Forge the new Block by adding it to the chain with the proof
     # previous_hash = blockchain.hash(blockchain.last_block)
     # block = blockchain.new_block(proof, previous_hash)
+    last_block = blockchain.last_block
+    last_block_string = json.dumps(last_block, sort_keys=True).encode()
+    try:
+        data = request.get_json()
+        post_proof = data["proof"]
+        post_id = data["id"]
+    except KeyError:
+        return jsonify({"message": "You need to pass in proof or id"}), 400
+    if blockchain.valid_proof(last_block_string, post_proof):
+        proof = f'{last_block_string}{post_proof}'.encode()
+        proof_hash = hashlib.sha256(proof).hexdigest()
+        blockchain.new_transaction(sender="0", recipient=post_id, amount=1)
+        new_block = blockchain.new_block(post_proof, proof_hash)
 
-    data = request.get_json()
-    required = ['proof', 'id']
-    if not all(k in data for k in required):
-        return jsonify({
-            'message': "Error, does not contain correct values"
-        },)
+        return jsonify({'message': 'New Block Forged'}), 200
     else:
-        last_block = blockchain.last_block
-        proof = data["proof"]
-
-        print(proof)
-        string_object = json.dumps(last_block, sort_keys=True)
-        print(f'String Object: {string_object}')
-        block_string = string_object.encode()
-        # validate proof
-        if blockchain.valid_proof(block_string, proof):
-            # append block to end of chain
-            blockchain.new_transaction(
-                sender="0",
-                recipient=data['id'],
-                amount=1
-            )
-            blockchain.chain.append(blockchain.new_block(proof))
-            return jsonify({"message": "new block forged"})
-        else:
-            return jsonify({"message": "invalid proof"})
-    # # print(response)
+        return jsonify({
+            "message": "Error"
+        }), 404
 
 
-@app.route('/transactions/new', methods=['POST'])
-def new_transaction():
-    data = request.get_json()
-    required = ['recipient', 'sender', 'amount']
-
-    if not all(k in data for k in required):
-        response = {'message': "missing values"}
-        return jsonify({response}), 400
-    index = blockchain.new_transaction(
-        data['sender'], data['recipient'], data['amount'])
-
-    response = {'message': f'transaction will be added to block {index}'}
-    return jsonify({response}), 200
+@app.route('/last_block', methods=['GET'])
+def get_last_block():
+    response = {
+        "last_block": blockchain.last_block
+    }
+    return jsonify(response), 200
 
 
 @app.route('/chain', methods=['GET'])
@@ -185,17 +164,9 @@ def full_chain():
     return jsonify(response), 200
 
 
-@app.route('/last_block', methods=['GET'])
-def last_block_call():
-
-    response = blockchain.last_block
-
-    return jsonify(response), 200
-
-
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Welcome to blockchain!</h1>", 200
+    return "<h1>HELLO</h1>", 200
 
 
 # Run the program on port 5000
