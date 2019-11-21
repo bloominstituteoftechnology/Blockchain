@@ -3,7 +3,7 @@
 ### General
 
 #### Help!  I'm on Windows and pipenv doesn't work!
-If you've already done the setup for BW1, you should be set.  Don't forget that you need to create your virtual environment with _pipenv --three --python=\`which python3\`_  *NOTE* that there are backticks (\`) around *which python3*
+If you've already done the setup for BW1, you should be set.  Don't forget that you need to change the `pipfile` to use Python version "3" and create your virtual environment with _pipenv --three --python=\`which python3\`_  *NOTE* that there are backticks (\`) around *which python3*
 
 If not, follow [these steps](https://github.com/LambdaSchool/CS-Build-Week-1/blob/master/WindowsSetup.md) up to and including number 7
 
