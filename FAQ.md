@@ -7,6 +7,10 @@ If you've already done the setup for BW1, you should be set.  Don't forget that 
 
 If not, follow [these steps](https://github.com/LambdaSchool/CS-Build-Week-1/blob/master/WindowsSetup.md) up to and including number 7
 
+#### Help!  I'm on Windows, I've done the above, and the console says the server is running on http://0.0.0.0:5000, but when I try to load that I get an error that the site cannot be reached.
+
+This is a great learning example of why you should _never_ hardcode values.  On a Mac, this will work.  On Windows, the server can be found on http://localhost:5000 or http://127.0.0.1:5000.
+
 #### What's the difference between block chain and crypto currency?
 A block chain is a ledger that securely records transactions or other data with a timestamp in a public form that cannot be altered or manipulated after it is recorded.  Crypto currency is made up currency with transactions that are recorded within the block chain.  Most systems introduce money into the system by paying it as a set reward for mining a block.
 
