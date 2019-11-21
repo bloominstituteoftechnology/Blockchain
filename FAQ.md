@@ -2,6 +2,11 @@
 ## Contents
 ### General
 
+#### Help!  I'm on Windows and pipenv doesn't work!
+If you've already done the setup for BW1, you should be set.  Don't forget that you need to create your virtual environment with _pipenv --three --python=\`which python3\`_  *NOTE* that there are backticks (\`) around *which python3*
+
+If not, follow [these steps](https://github.com/LambdaSchool/CS-Build-Week-1/blob/master/WindowsSetup.md) up to and including number 7
+
 #### What's the difference between block chain and crypto currency?
 A block chain is a ledger that securely records transactions or other data with a timestamp in a public form that cannot be altered or manipulated after it is recorded.  Crypto currency is made up currency with transactions that are recorded within the block chain.  Most systems introduce money into the system by paying it as a set reward for mining a block.
 
