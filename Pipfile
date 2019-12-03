@@ -7,8 +7,8 @@ verify_ssl = true
 flake8 = "*"
 
 [packages]
-requests = "==2.18.4"
-flask = "==0.12.2"
+requests = ">=2.20.0"
+flask = ">=1.0.0"
 
 [requires]
 python_version = "3.7"
