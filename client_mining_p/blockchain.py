@@ -6,7 +6,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 # hardcoded difficulty setting
-DIFFICULTY = 6
+DIFFICULTY = 2
 
 
 class Blockchain(object):
@@ -145,7 +145,6 @@ def mine():
     else:
         # check if the proof is valid
         block_string = json.dumps(blockchain.last_block, sort_keys=True)
-        
         miner_proof = data['proof']
         
         if blockchain.valid_proof(block_string, miner_proof):
@@ -153,16 +152,13 @@ def mine():
             new_block = blockchain.new_block(miner_proof, previous_hash)
             
             response = {
-                'mining_status' : 'sucess',
-                'message' : "You're getting a block reward!",
+                'message' : "New Block Forged",
                 'block' : new_block
             }
             code = 200
         else:
             response = {
-                'mining_status' : 'failure',
-                'message' : 'please update last block',
-                'block' : blockchain.last_block
+                'message' : 'please update last block'
             }
             code = 400
 
