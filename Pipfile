@@ -8,7 +8,7 @@ flake8 = "*"
 
 [packages]
 requests = ">=2.20.0"
-flask = ">=1.0.0"
+flask = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
