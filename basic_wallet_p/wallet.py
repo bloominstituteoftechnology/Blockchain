@@ -19,6 +19,7 @@ def search_blockchain(id, chain) -> dict():
     
     key_list = ['sent', 'received', 'all']
     txt = {key : [] for key in key_list}
+    txt['balance'] = 0
 
     for block in chain:
         transactions = block['transactions']
@@ -31,11 +32,13 @@ def search_blockchain(id, chain) -> dict():
             
             if trans['sender'] == id:
                 txt['sent'].append(trans)
-                flag = True    
+                flag = True
+                txt['balance'] -= trans['amount']
         
             if trans['recipient'] == id:
                 txt['received'].append(trans)
                 flag = True
+                txt['balance'] += trans['amount']
         
             if flag == True:
                 txt['all'].append(trans)
@@ -72,8 +75,10 @@ if __name__ == "__main__":
     sent = txts['sent']
     received = txts['received']
     all_txts = txts['all']
+    balance = txts['balance']
 
-    print(f'''{args.id} has {len(all_txts)} total transactions on the blockchain. 
-    {len(sent)} are send transactions and {len(received)} are recieve transactions.''')
+    print(f'''{args.id} has {len(all_txts)} total transactions on the blockchain with a balance of {balance}. \n
+
+    {len(sent)} send transactions: \n {sent} \n {len(received)} recieve transactions. \n {received}''')
     
 
