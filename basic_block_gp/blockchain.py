@@ -157,7 +157,7 @@ def full_chain():
 def last_block():
     response = {
         #Return the last block in the chain
-       'block' : blockchain.chain[-1]
+       'block' : blockchain.last_block
     }
     return jsonify(response), 200
 

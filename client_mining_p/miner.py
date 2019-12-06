@@ -72,7 +72,7 @@ if __name__ == '__main__':
         
         
         # Get the block from `data` and use it to look for a new proof
-        block = data['block']
+        block = data['last_block']
         print('starting new proof')
         new_proof = proof_of_work(block)
 
@@ -98,3 +98,4 @@ if __name__ == '__main__':
         if data['message'] == 'New Block Forged':
             coins += 1
             print('Received block reward of 1, total coins: ', coins)
+            print(data)

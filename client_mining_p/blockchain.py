@@ -6,7 +6,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 
 # hardcoded difficulty setting
-DIFFICULTY = 2
+DIFFICULTY = 6
 
 
 class Blockchain(object):
@@ -129,10 +129,15 @@ blockchain = Blockchain()
 
 @app.route('/mine', methods=['POST'])
 def mine():
-    
-    # check if the posted block is valid
-    data = request.get_json()
-    
+
+    # Handle Non-json repsonse
+    try:
+        data = request.get_json()
+    except ValueError:
+        print('Error: Non-json response')
+        print(request)
+        return 'Error'
+
     req_keys = ['proof', 'id']
 
     for key in req_keys:
@@ -176,10 +181,10 @@ def full_chain():
     return jsonify(response), 200
 
 @app.route('/last_block', methods=['GET'])
-def last_block():
+def return_last_block():
     response = {
         #Return the last block in the chain
-       'block' : blockchain.chain[-1]
+       'last_block' : blockchain.last_block
     }
     return jsonify(response), 200
 
