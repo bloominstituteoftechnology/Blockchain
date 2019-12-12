@@ -62,9 +62,10 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
+        block_string = block.encode()
 
         # TODO: Hash this string using sha256
-
+        hashed_string = hashlib.sha256(block_string)
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
@@ -72,7 +73,7 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hashed_string.hexdigest()
 
     @property
     def last_block(self):
