@@ -31,13 +31,19 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'current_transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': self.hash(self.last_block)
         }
 
         # Reset the current list of transactions
         # Append the chain to the block
         # Return the new block
-        pass
+        self.current_transactions = []
+        self.chain.append(block)
+        return self.last_block()
 
     def hash(self, block):
         """
