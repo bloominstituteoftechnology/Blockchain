@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
 
         # Create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(proof=100, previous_hash=1)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -33,9 +33,9 @@ class Blockchain(object):
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'current_transactions': self.current_transactions,
+            'transactions': self.current_transactions,
             'proof': proof,
-            'previous_hash': self.hash(self.last_block)
+            'previous_hash': previous_hash or self.hash(self.last_block)
         }
 
         # Reset the current list of transactions
@@ -43,7 +43,7 @@ class Blockchain(object):
         # Return the new block
         self.current_transactions = []
         self.chain.append(block)
-        return self.last_block()
+        return block
 
     def hash(self, block):
         """
@@ -62,7 +62,7 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
-        block_string = block.encode()
+        block_string = json.dumps(block, sort_keys=True).encode()
 
         # TODO: Hash this string using sha256
         hashed_string = hashlib.sha256(block_string)
@@ -87,9 +87,14 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
+        # Proof is a sha256 string with 3 leading zeroes
         # TODO
-        pass
+        block_string = json.dumps(block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
         # return proof
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -104,11 +109,13 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
+        guess = f'{block_string}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
         # return True or False
+        return guess_hash[:3] == "000"
 
 
-# Instantiate our Node
+        # Instantiate our Node
 app = Flask(__name__)
 
 # Generate a globally unique address for this node
@@ -121,11 +128,16 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
-
+    proof = blockchain.proof_of_work(blockchain.last_block)
     # Forge the new Block by adding it to the chain with the proof
-
+    previous_hash = blockchain.hash(blockchain.last_block)
+    block = blockchain.new_block(proof, previous_hash)
     response = {
-        # TODO: Send a JSON response with the new block
+        'message': 'New block forged',
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash']
     }
 
     return jsonify(response), 200
