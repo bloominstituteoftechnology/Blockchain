@@ -97,8 +97,7 @@ class Blockchain(object):
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         # return True or False
-        return guess_hash[:3] == "000"
-
+        return guess_hash[:6] == "000000"
 
         # Instantiate our Node
 app = Flask(__name__)
@@ -110,8 +109,9 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['GET', 'POST'])
 def mine():
+    data = request.get_json()
     # Run the proof of work algorithm to get the next proof
     proof = blockchain.proof_of_work(blockchain.last_block)
     # Forge the new Block by adding it to the chain with the proof
@@ -124,7 +124,6 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash']
     }
-
     return jsonify(response), 200
 
 
@@ -133,7 +132,14 @@ def full_chain():
     response = {
         'chain': blockchain.chain,
         'current_length': len(blockchain.chain)
+    }
+    return jsonify(response), 200
 
+
+@app.route('/last_block', methods=['GET'])
+def last_block():
+    response = {
+        'last_block': blockchain.last_block()
     }
     return jsonify(response), 200
 
