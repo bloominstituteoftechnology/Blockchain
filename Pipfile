@@ -5,10 +5,12 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+pylint = "*"
+autopep8 = "*"
 
 [packages]
 requests = ">=2.20.0"
 flask = ">=1.0.0"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
