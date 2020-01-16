@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        </style>
+        <title>Lambda-Coin-Purse {{ title }}</title>
+        <!-- CSS, keywords, metadata goes here -->
+    </head>
+
+    <body>
+        <h1>Lambda-coin!</h1>
+            <p STYLE="font-family: Verdana; font-weight: bold;"> 
+            Input your user ID and see you current coin count, ledger and transaction history all in one place!
+            </p>
+        {% block content %}
+        <form bgcolor="#00ff00" class="blacktext" action="/user" method="post">
+
+            <input type="text" STYLE="color: #000000; font-family: Verdana; font-weight: bold; font-size: 12px;
+             background-color: #fffff0;" 
+            name="user_name" placeholder="User to add">
+
+            <input type="submit"  STYLE="color: #000000; font-family: Verdana;
+             font-weight: bold; font-size: 12px; background-color: #00ff00;" value="Add User">
+
+        </form>
+
+        <form bgcolor="#00ff00" action="/compare" method="post">
+            <select name="user1" STYLE="color: #000000; font-family: Verdana; font-weight: bold; font-size: 12px;
+             background-color: #fffff0; 
+            size=100; maxlength=3000">
+                {% for user in users %}
+                <option bgcolor="#5A5E5C" class="blacktext" value="{{ user.name }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="user2" STYLE="color: #000000; font-family: Verdana; font-weight: bold; font-size: 12px; background-color: #fffff0;">
+                {% for user in users %}
+                <option bgcolor="5A5E5C" class="blacktext"value="{{ user.name }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" STYLE="color: #5A5E5C; font-family: Verdana; font-weight: bold; font-size: 12px; background-color: #fffff0; 
+            size=100; maxlength=3000" name="tweet_text" placeholder="Tweet text to predict">
+            <input type="submit" STYLE="color: #5A5E5C; font-family: Verdana; font-weight: bold; font-size: 12px; background-color: #00ff00;"
+             value="Compare Users">
+        </form>
+        {% endblock %}
+    </body>
+</html>
