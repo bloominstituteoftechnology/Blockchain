@@ -98,6 +98,7 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:6] == "000000"
 
+
 # Instantiate our Node
 app = Flask(__name__)
 # Generate a globally unique address for this node

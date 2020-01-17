@@ -9,6 +9,7 @@ flake8 = "*"
 [packages]
 requests = ">=2.20.0"
 flask = ">=1.0.0"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.7"
