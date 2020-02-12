@@ -1,9 +1,9 @@
-import hashlib
-import json
+import hashlib  #sha-256 for this project
+import json  
 from time import time
-from uuid import uuid4
+from uuid import uuid4  # for unique user id  -  very difficult to replicate
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request  # gotta learn about flask
 
 
 class Blockchain(object):
@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
 
         # Create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash="I'm a teapot.", proof=100)
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -29,15 +29,23 @@ class Blockchain(object):
         :param previous_hash: (Optional) <str> Hash of previous Block
         :return: <dict> New Block
         """
-
+        # a dictionary
         block = {
             # TODO
+            'index': len(self.chain) + 1, # index of the first block is 1
+            # for index here in a block, we get to count normally
+            'time_stamp':time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash # or self.hash(self.chain[-1]) hashing the last block
         }
 
         # Reset the current list of transactions
-        # Append the chain to the block
+        self.current_transactions = []
+        # Append the block to the chain
+        self.chain.append(block)
         # Return the new block
-        pass
+        return block
 
     def hash(self, block):
         """
@@ -68,7 +76,8 @@ class Blockchain(object):
         # TODO: Return the hashed block string in hexadecimal format
         pass
 
-    @property
+    @property # decorator~ the preamble for a function
+    # makes the return from the function a property of the chain
     def last_block(self):
         return self.chain[-1]
 
@@ -84,8 +93,10 @@ class Blockchain(object):
         pass
         # return proof
 
-    @staticmethod
+    @staticmethod # decorator
+    # can run it without an instance
     def valid_proof(block_string, proof):
+        #  hash(block_string, proof) = proof of work
         """
         Validates the Proof:  Does hash(block_string, proof) contain 3
         leading zeroes?  Return true if the proof is valid
@@ -109,9 +120,10 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
+print(blockchain.chain)
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/mine', methods=['GET']) # get request
 def mine():
     # Run the proof of work algorithm to get the next proof
 
@@ -119,15 +131,18 @@ def mine():
 
     response = {
         # TODO: Send a JSON response with the new block
+        'message':'Hello Nisa!'
     }
 
     return jsonify(response), 200
 
 
-@app.route('/chain', methods=['GET'])
+@app.route('/chain', methods=['GET']) # get request
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
