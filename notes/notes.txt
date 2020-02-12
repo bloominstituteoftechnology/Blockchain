@@ -1,0 +1,174 @@
+Research Flask:
+
+Backend for API calls
+
+
+~~~~~~~~~~~~~~~~~~~~
+
+
+What is blockchain?
+
+* cryptocurrency work on a concept called blockchain
+
+*how can you keep track of a series of transactions without having to trust someone
+
+** a data structure and support system to keep a public ledger of transactions
+
+** no one owns it
+
+** anyone can make a copy
+
+** everyone has access to the source code
+
+** yet it is still secure thanks to clever use of cryptography
+
+'''
+
+
+'''
+
+structure of a block:
+
+* index number
+* time stamp
+* list of transactions
+* proof used to mine this 
+  ** solution to a difficult problem that takes a large amount of computation
+
+* cryptographic hash of previous block
+  ** critical 
+  ** remember hash functions from before??
+   hash(key) % arr.length
+
+  ** must be deterministic: same data input results in same data output
+
+  ** simple to turn data into a hash but nearly impossible to turn a hash back into delattr
+
+
+'''
+
+
+'''
+
+Block chain is constructed by stringing together these hashes.
+
+* starts with a gensis block (manually created)
+* from then each block will have the hash of the block before it
+
+
+* because the data for each bblock includes a hash of the previous block, if a transaction is modified, it will change the hash of that block
+
+  ** as a result , the previous hash recorded in the next block and all following blocks will no longer match, thus breaking the chain
+
+* what prevents a attacker from redoing all of the hashses
+  ** proof of work
+
+'''
+
+'''
+Proof of work:
+
+* originally created to combat spam lol
+
+* an arbitrarily difficult problem that is solved by spending a large amount of computation TimeoutError
+
+* work cannot be re-used, although some systems are vulnerable to this exploitation
+
+* solutions are difficult to compute but easy to verify
+
+
+For our Proof of Work:
+
+* we will be using the SHA-256 hash
+  ** stands for secure hash algorithm
+
+* creates a 32-byte hash
+
+* usually displayed as a 64 digit hexadecimal number
+
+
+* using sha-256 hashing function to create a hash of the last block concatenated with the proposed solution
+
+* the first n characters must be 0, where n is a difficulty setting
+
+
+LECTURE from CS23
+
+blockchain makes an online currentcy
+
+the whole system is designed and proveable  because it has a public immutable system
+
+* its all publically viewable
+* anyone can get the source code and manipulate it but the chain will become invalid and break
+
+** you can utilize blockchain and not have to trust anyone
+
+
+
+* each link in the blockchain is called a block 
+
+** blocks store the hash of the previous block, the time stamp,  and the current transaction
+
+
+
+purpose of mining: security
+
+if you change anything on the block, the hash on it changes, 
+
+** guessing random numbers as fast as you possibly can until you stumble on the correctly specific hash
+
+** bitcoin needs 70 leading zeros when mining
+
+we want to mine a block every ten minutes to maintain the inflation rate, confirmed transactions
+
+** in all of the blocks are pending transactions
+
+** using bitcoins at stores takes 10 minutes for transaction to be approved 
+** not a very fast way to do transactions
+
+
+
+How do we validate the blocks in the chain?
+
+* check chain integrity; make sure no breaks in the chain
+
+* check that hashes match and proofs match
+
+'''
+
+
+
+'''
+2/12 LIVE LECTURE
+
+hashtable = is an array of linked lists
+
+Anatomy of block chain:
+
+SLL COMPONENT
+PROOF OF WORK - originally to prevent spam emails
+cryptographic hashes
+
+the chain is the previous blocks hashes
+  * if the hash is altered  the hash wont match and will show it has been tampered with 
+
+you have to solve the proof 
+  ** takes 100 yrs worth of computation effort to solve
+
+Why is proof of work hard?
+  * the size of the proof
+  * computational requirements and reverse hashing
+  ******** the matching number of leading zeros === proof of work *******
+
+  * bitcoin requires 70 leading zeros OH GOD
+
+  * O(16 ^ n)
+    -exponential (watch video later for this  at 20 minutes in)
+
+  * hash table to come up with hashes more efficiently
+
+  The genesis block is the first block in the block chain
+    * inits blockchain  
+    * doesnt have a prev hash as there is no prev block
+
+    * the prev hash being  whatever you set it to will help identify it as the genesis
