@@ -63,8 +63,12 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
+        stringObject = json.dumps(block, sort_keys=True)
+        blockString = stringObject.encode()
 
         # TODO: Hash this string using sha256
+        rawHash = hashlib.sha256(blockString)
+        hexHash = rawHash.hexdigest()
 
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
@@ -73,7 +77,7 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hexHash
 
     @property
     def last_block(self):
@@ -136,7 +140,7 @@ def full_chain():
     response = {
         # Return the chain and its current length
         'chain': blockchain.chain,
-        'length': len(blockchain.chain)
+        'length': len(blockchain.chain),
     }
     return jsonify(response), 200
 
