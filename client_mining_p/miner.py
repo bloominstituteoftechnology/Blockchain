@@ -15,18 +15,7 @@ class Blockchain(object):
         self.new_block(proof=100, previous_hash=1)
 
     def new_block(self, proof, previous_hash=None):
-        """
-        Create a new Block in the Blockchain
-        A block should have:
-        * Index
-        * Timestamp
-        * List of current transactions
-        * The proof used to mine this block
-        * The hash of the previous block
-        :param proof: <int> The proof given by the Proof of Work algorithm
-        :param previous_hash: (Optional) <str> Hash of previous Block
-        :return: <dict> New Block
-        """
+   
 
         block = {
             'index': len(self.chain) + 1,
@@ -140,6 +129,6 @@ def last_block():
     }
     return jsonify(response), 200
 
-# Run the program on port 5000
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
