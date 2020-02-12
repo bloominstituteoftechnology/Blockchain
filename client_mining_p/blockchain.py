@@ -72,7 +72,7 @@ print(blockchain.hash(blockchain.last_block))
 def mine():
 
     data = request.get_json(force=False, silent=False, cache=True)
-    proof = blockchain.proof_of_work(blockchain.last_block)
+    # proof = blockchain.proof_of_work(blockchain.last_block)
 
     print(data)
     prove = data['proof']
@@ -80,16 +80,16 @@ def mine():
     previous_hash = blockchain.hash(blockchain.last_block)
     new_block = blockchain.new_block(prove, previous_hash)
     
-    
-
-    if prove == proof:
-        return jsonify(response, "Nice going"), 400
-    else:
-        return jsonify(response, "Womp womp"), 200
-
     response = {
         "block": new_block
     }
+
+    if prove:
+        return jsonify(response, "Nice going"), 400
+    
+    
+
+   
 
     
 
