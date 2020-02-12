@@ -75,6 +75,14 @@ class Blockchain(object):
 
         problem with python string = they are actually objects so have to encode
 
+        .encode()
+        a string in python is an object with meta data and functions 
+        cannot be encoded into an sha-256
+        .encode() turns into bit string
+
+        has same effect b " " will have
+        gives us a RAW string
+
         '''
         # TODO: Hash this string using sha256
         raw_hash = hashlib.sha256(block_string)
@@ -109,7 +117,12 @@ class Blockchain(object):
         :return: A valid proof for the provided block
         """
         # TODO
-        pass
+        block_string = json.dumps(block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+            # will run until it find one that works
+        return proof
         # return proof
 
     @staticmethod # decorator
@@ -117,7 +130,7 @@ class Blockchain(object):
     def valid_proof(block_string, proof):
         #  hash(block_string, proof) = proof of work
         """
-        Validates the Proof:  Does hash(block_string, proof) contain 3
+        Validates the Proof:  Does self.hash(block_string, proof) contain 3
         leading zeroes?  Return true if the proof is valid
         :param block_string: <string> The stringified block to use to
         check in combination with `proof`
@@ -126,8 +139,29 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
+
+        '''
+        hash() only takes one param while our self.hash() takes two
+
+        using sha-256 hash to:
+            1) validating the chain
+            2) proof of work
+        '''
         # TODO
-        pass
+        guess = f"{block_string}{proof}".encode()
+        '''
+        becomes bit string so we can hash it
+        '''
+
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        '''
+        hexdigest converts into a readable format so we can compare
+        '''
+
+        return guess_hash[:3] == '000'
+        '''
+        return if guess_hash  first 3 characters == '000'
+        '''
         # return True or False
 
 
@@ -146,12 +180,17 @@ print(blockchain.hash(blockchain.last_block))
 @app.route('/mine', methods=['GET']) # get request
 def mine():
     # Run the proof of work algorithm to get the next proof
+    proof = blockchain.proof_of_work(blockchain.last_block)
 
     # Forge the new Block by adding it to the chain with the proof
 
+    previous_hash = blockchain.hash(blockchain.last_block)
+    new_block = blockchain.new_block(proof, previous_hash)
+
+    
     response = {
         # TODO: Send a JSON response with the new block
-        'message':'Hello Nisa!'
+        'block': new_block
     }
 
     return jsonify(response), 200
