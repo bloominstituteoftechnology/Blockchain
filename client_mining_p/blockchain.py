@@ -92,7 +92,7 @@ class Blockchain(object):
         guess = f"{block_string}{proof}".encode()
         guessHash = hashlib.sha256(guess).hexdigest()
 
-        return guessHash[:2] == "00"
+        return guessHash[:6] == "000000"
 
     @staticmethod
     def valid_proof_block(block, proof):
@@ -118,14 +118,11 @@ def mine():
     jsonStr = request.data.decode("utf-8")
     incomingMinedBlock = json.loads(jsonStr)
     newProof = incomingMinedBlock.get("proof", None)
-    newID = incomingMinedBlock.get("id", None)
-    if newProof is None or newID is None:
+    clientID = incomingMinedBlock.get("id", None)
+    if newProof is None or clientID is None:
         return jsonify({"error": "Invalid proof info"}), 400
-    newID = int(newID)
     newProof = int(newProof)
 
-    if blockchain.last_block["index"] != newID:
-        return jsonify({"error": "Block already solved"}), 401
     if Blockchain.valid_proof_block(blockchain.last_block, newProof):
         # successful = add new block and return message indicating success
         previousHash = blockchain.hash(blockchain.last_block)
