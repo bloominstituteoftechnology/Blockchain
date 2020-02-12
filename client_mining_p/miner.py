@@ -7,7 +7,7 @@ import time
 import random
 
 
-def proof_of_work(block):
+def proof_of_work(block, iterations):
     """
     Simple Proof of Work Algorithm
     Stringify the block and look for a proof.
@@ -16,13 +16,11 @@ def proof_of_work(block):
     :return: A valid proof for the provided block
     """
     blockString = json.dumps(block, sort_keys=True)
-    proof = 0
-    startTime = time.time()
-    while valid_proof(blockString, proof) is False:
+    for i in range(iterations):
         proof = int(random.random() * 100000000)
-    totalTime = time.time() - startTime
-    print(f"last proof took {totalTime} seconds")
-    return proof
+        if valid_proof(blockString, proof):
+            return proof
+    return None
 
 
 def valid_proof(block_string, proof):
@@ -92,11 +90,13 @@ if __name__ == '__main__':
 
     # Run forever until interrupted
     while True:
-        data = getLastblock()
-        if data is None:
-            break
-
-        new_proof = proof_of_work(data)
+        data = None
+        new_proof = None
+        while new_proof is None:
+            data = getLastblock()
+            if data is None:
+                break
+            new_proof = proof_of_work(data, 1000000)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
