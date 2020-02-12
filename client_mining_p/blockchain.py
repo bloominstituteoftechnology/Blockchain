@@ -14,6 +14,8 @@ class Blockchain(object):
         # Create the genesis block
         self.new_block(previous_hash=-1, proof=0)
 
+        self.difficulty = 5
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -92,7 +94,7 @@ class Blockchain(object):
         guess = f"{block_string}{proof}".encode()
         guessHash = hashlib.sha256(guess).hexdigest()
 
-        return guessHash[:6] == "000000"
+        return guessHash[:blockchain.difficulty] == "0" * blockchain.difficulty
 
     @staticmethod
     def valid_proof_block(block, proof):
@@ -137,8 +139,6 @@ def mine():
             "status": "failure",
         }
         return jsonify(response), 401
-    
-
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -153,6 +153,10 @@ def full_chain():
 @app.route('/lastblock', methods=['GET'])
 def lastBlock():
     return jsonify(blockchain.last_block), 200
+
+@app.route("/difficulty", methods=["GET"])
+def difficulty():
+    return jsonify(blockchain.difficulty), 200
 
 # Run the program on port 5000
 if __name__ == '__main__':

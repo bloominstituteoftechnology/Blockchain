@@ -7,7 +7,7 @@ import time
 import random
 
 
-def proof_of_work(block, iterations):
+def proof_of_work(block, iterations, difficulty):
     """
     Simple Proof of Work Algorithm
     Stringify the block and look for a proof.
@@ -18,12 +18,12 @@ def proof_of_work(block, iterations):
     blockString = json.dumps(block, sort_keys=True)
     for i in range(iterations):
         proof = int(random.random() * 100000000)
-        if valid_proof(blockString, proof):
+        if valid_proof(blockString, proof, difficulty):
             return proof
     return None
 
 
-def valid_proof(block_string, proof):
+def valid_proof(block_string, proof, difficulty):
     """
     Validates the Proof:  Does hash(block_string, proof) contain 6
     leading zeroes?  Return true if the proof is valid
@@ -36,21 +36,23 @@ def valid_proof(block_string, proof):
     """
     guess = f"{block_string}{proof}".encode()
     guessHash = hashlib.sha256(guess).hexdigest()
-    return guessHash[:6] == "000000"
+    return guessHash[:difficulty] == "0" * difficulty
 
 
 def getLastblock():
     r = requests.get(url=node + "/lastblock")
+    diff = requests.get(url=node + "/difficulty")
     # Handle non-json response
     try:
         data = r.json()
+        difficulty = diff.json()
     except ValueError:
         print("Error:  Non-json response")
         print("Response returned:")
         print(r)
         return None
 
-    return data
+    return (data, difficulty)
 
 def submitProof(new_proof):
     # When found, POST it to the server {"proof": new_proof, "id": id}
@@ -93,10 +95,10 @@ if __name__ == '__main__':
         data = None
         new_proof = None
         while new_proof is None:
-            data = getLastblock()
+            data, difficulty = getLastblock()
             if data is None:
                 break
-            new_proof = proof_of_work(data, 1000000)
+            new_proof = proof_of_work(data, 1000000, difficulty)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
