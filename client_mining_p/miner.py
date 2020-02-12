@@ -9,7 +9,7 @@ def proof_of_work(block):
     
     block_string = json.dumps(block, sort_keys=True)
     proof = 0
-    while self.valid_proof(block_string, proof) is False:
+    while valid_proof(block_string, proof) is False:
         proof += 1
 
     return proof
@@ -49,7 +49,8 @@ if __name__ == '__main__':
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
-        new_proof = data
+        print(data)
+        new_proof = proof_of_work(data)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
