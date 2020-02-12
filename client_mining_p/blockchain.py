@@ -123,6 +123,7 @@ def mine():
         return jsonify(response), 400
     else:
         #Check if valid(Success) or not(failure)
+        block_string = json.dumps(blockchain.last_block, sort_keys=True)
         if (blockchain.valid_proof(block_string, data['proof']) == True):
             response = {'message': "Success"}
         else:

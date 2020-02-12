@@ -1,8 +1,8 @@
 import hashlib
 import requests
-
 import sys
 import json
+import time
 
 
 def proof_of_work(block):
@@ -13,10 +13,14 @@ def proof_of_work(block):
     in an effort to find a number that is a valid proof
     :return: A valid proof for the provided block
     """
+    start = time.time()
     block_string = json.dumps(block, sort_keys=True)
     proof = 0
     while valid_proof(block_string, proof) is False:
         proof += 1
+    end = time.time()
+    timer = end - start
+    print(f'Runtime: {timer} seconds')
     return proof
 
 
@@ -75,8 +79,8 @@ if __name__ == '__main__':
         # TODO: If the server responds with a 'message' 'success'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        if (data['message'] == 'success'):
+        if (data['message'] == 'Success'):
             coins += 1
-            print(f'You have mined {coins} coins.')
+            print(f'You have mined {coins} coin(s).')
         else:
             print(data['message'])
