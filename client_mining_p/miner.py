@@ -41,6 +41,40 @@ def valid_proof(block_string, proof):
     return guessHash[:6] == "000000"
 
 
+def getLastblock():
+    r = requests.get(url=node + "/lastblock")
+    # Handle non-json response
+    try:
+        data = r.json()
+    except ValueError:
+        print("Error:  Non-json response")
+        print("Response returned:")
+        print(r)
+        return None
+
+    return data
+
+def submitProof(new_proof):
+    # When found, POST it to the server {"proof": new_proof, "id": id}
+    post_data = {"proof": new_proof, "id": id}
+
+    r = requests.post(url=node + "/mine", json=post_data)
+    try:
+        data = r.json()
+    except ValueError:
+        print("Error:  Non-json response")
+        print("Response returned:")
+        print(r)
+    status = data.get("status", None)
+    if status is not None:
+        if status == "success":
+            return True
+        else:
+            print("block already solved")
+            return False
+    else:
+        return False
+
 if __name__ == '__main__':
     # What is the server address? IE `python3 miner.py https://server.com/api/`
     if len(sys.argv) > 1:
@@ -58,34 +92,16 @@ if __name__ == '__main__':
 
     # Run forever until interrupted
     while True:
-        r = requests.get(url=node + "/lastblock")
-        # Handle non-json response
-        try:
-            data = r.json()
-        except ValueError:
-            print("Error:  Non-json response")
-            print("Response returned:")
-            print(r)
+        data = getLastblock()
+        if data is None:
             break
 
-        # TODO: Get the block from `data` and use it to look for a new proof
         new_proof = proof_of_work(data)
-        print(f"new_proof {new_proof}")
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
-        r = requests.post(url=node + "/mine", json=post_data)
-        try:
-            data = r.json()
-        except ValueError:
-            print("Error:  Non-json response")
-            print("Response returned:")
-            print(r)
-        status = data.get("status", None)
-        if status is not None:
-            if status == "success":
-                coins += 1
-            else:
-                print("block already solved")
-        print(f"my coins: {coins}")
+        success = submitProof(new_proof)
+        if success:
+            coins += 1
+            print(f"my coins: {coins}")
