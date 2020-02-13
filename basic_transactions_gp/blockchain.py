@@ -12,7 +12,7 @@ class Blockchain(object):
         self.current_transactions = []
 
         # Create the genesis block
-        self.new_block(previous_hash=-1, proof=0)
+        self.new_block(previous_hash="-1", proof=0)
 
         self.difficulty = 5
 
@@ -36,7 +36,7 @@ class Blockchain(object):
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
-            'previous_hash': previous_hash or self.hash(self.chain[-1])
+            'previousHash': previous_hash or self.hash(self.chain[-1])
         }
 
         # Reset the current list of transactions
@@ -114,7 +114,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof_block(block, proof):
         properties = [block.get("index", None), block.get("timestamp", None), block.get(
-            "transactions", None), block.get("proof", None), block.get("previous_hash", None)]
+            "transactions", None), block.get("proof", None), block.get("previousHash", None)]
         if len([x for x in properties if x is not None]) != 5:
             print("invalid block structure")
             return False
@@ -146,7 +146,7 @@ def mine():
         # successful = add new block and return message indicating success
         previousHash = blockchain.hash(blockchain.last_block)
 
-        blockIndex = blockchain.newTransaction(0, clientID, 1)
+        blockIndex = blockchain.newTransaction("0", clientID, 1)
 
         newBlock = blockchain.new_block(newProof, previousHash)
         response = {
