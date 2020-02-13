@@ -16,9 +16,9 @@ struct ContentView: View {
 	@State private var data = ["a", "b", "c"]
 
 	@State private var userID = ""
-	@State private var totalSent: CGFloat = 0
-	@State private var totalReceived: CGFloat = 0
-	@State private var currentBalance: CGFloat = 0
+	@State private var totalSent = 0.0
+	@State private var totalReceived = 0.0
+	@State private var currentBalance = 0.0
 
     var body: some View {
 		Form {
@@ -54,7 +54,10 @@ struct ContentView: View {
 
 	func fetchBalance() {
 		controller.getLatestChain { controller in
-			print(controller.chain)
+			let balanceInfo = controller.balance(for: self.userID)
+			self.currentBalance = balanceInfo.balance
+			self.totalSent = balanceInfo.sent
+			self.totalReceived = balanceInfo.received
 		}
 	}
 }

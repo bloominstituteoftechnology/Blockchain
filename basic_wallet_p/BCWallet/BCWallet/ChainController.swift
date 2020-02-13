@@ -29,8 +29,24 @@ class ChainController {
 	}
 
 	func balance(for user: String) -> (balance: Double, sent: Double, received: Double) {
+		var balance = 0.0
+		var totalSent = 0.0
+		var totalReceived = 0.0
 
-		return (0,0,0)
+		let xtions = chain.flatMap { $0.transactions }.filter { $0.sender == user || $0.recipient == user }
+
+		for transaction in xtions {
+			if transaction.sender == user {
+				balance -= transaction.amount
+				totalSent += transaction.amount
+			}
+			if transaction.recipient == user {
+				balance += transaction.amount
+				totalReceived += transaction.amount
+			}
+		}
+
+		return (balance, totalSent, totalReceived)
 	}
 }
 
