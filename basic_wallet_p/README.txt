@@ -1,4 +1,6 @@
-Account balances in a blockchain currency are not real values that are stored somewhere.  Instead, wallet programs derive this balance by adding and subtracting all of the transactions for the user that are recorded in the ledger, to calculate the current balance.
+Account balances in a blockchain currency are not real values that are stored somewhere.  
+Instead, wallet programs derive this balance by adding and subtracting all of the 
+transactions for the user that are recorded in the ledger, to calculate the current balance.
 
 Build a simple wallet app using the front-end technology of your choice.  You will not be evaluated on the aesthetics of your app.
 

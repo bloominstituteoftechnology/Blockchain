@@ -48,14 +48,14 @@ if __name__ == '__main__':
         node = sys.argv[1]
     else:
         node = "http://127.0.0.1:5000"
-
+    
     # Load ID
     f = open("my_id.txt", "r")
     id = f.read()
     print("ID is", id)
     f.close()
-
     # Run forever until interrupted
+    
     while True:
         r = requests.get(url=node + "/last_block")
         # Handle non-json response
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             print(r)
             break
 
-        # TODO: Get the block from `data` and use it to look for a new proof
+        # Get the block from `data` and use it to look for a new proof
         new_proof = proof_of_work(data['last_block'])
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
 
-        # TODO: If the server responds with a 'message' 'success'
+        # If the server responds with a 'message' 'success'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
         if (data['message'] == 'Success'):
