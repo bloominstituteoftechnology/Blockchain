@@ -70,6 +70,25 @@ blockchain = Blockchain()
 print(blockchain.chain)
 print(blockchain.hash(blockchain.last_block))
 
+@app.route('/transaction/new', methods=['POST'])
+def receive_new_transaction():
+
+    data = request.get_json()
+
+    required = ['sender', 'recipient', 'amount']
+
+    if not all(k in data for k in required):
+        return "Missing values.", 400
+
+    index = blockchain.new_transaction(data['sender'], 
+                                       data['recipient'], 
+                                       data['amount'])
+
+    response = {'message': f'Transactions will be included in block {index}'}
+    return jsonify(response), 200
+
+
+
 @app.route('/mine', methods=['POST'])
 def mine():
 
