@@ -31,7 +31,6 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
             'index': len(self.chain) + 1
             'timestamp': time()
             'transactions': self.current_transactions,
@@ -62,7 +61,8 @@ class Blockchain(object):
         # or we'll have inconsistent hashes
 
         # TODO: Create the block_string
-
+        string_object = json.dumps(block, sort_keys=True)
+        block_string = string_object.encode()
         # TODO: Hash this string using sha256
 
         # By itself, the sha256 function returns the hash in a raw string
@@ -86,9 +86,11 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
-        # return proof
+        block_string = json.dumps(block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -103,7 +105,8 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
+        guess = f'{block_string}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess)
         # return True or False
 
 
@@ -115,7 +118,8 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
-
+print(blockchain.chain)
+print(blockchain.hash(blockchain.last_block))
 
 @app.route('/mine', methods=['GET'])
 def mine():
@@ -133,6 +137,8 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain)
         # TODO: Return the chain and its current length
     }
     return jsonify(response), 200
