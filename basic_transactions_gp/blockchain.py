@@ -137,8 +137,10 @@ def receive_new_transaction():
 
     required = ['sender', 'recipient', 'amount']
     if not all(k in data for k in required):
-        # TODO Better error messaging
-        return "Missing values", 400
+        response = {
+            'message': "Missing values"
+        }
+        return jsonify(response), 400
 
     index = blockchain.new_transaction(data['sender'],
                                        data['recipient'],
