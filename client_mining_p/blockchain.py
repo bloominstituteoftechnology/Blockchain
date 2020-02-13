@@ -4,7 +4,6 @@ from time import time
 from uuid import uuid4
 
 from flask import Flask, jsonify, request
-from miner import proof_of_work
 
 
 class Blockchain(object):
