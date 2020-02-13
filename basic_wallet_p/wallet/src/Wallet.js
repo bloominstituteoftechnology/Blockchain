@@ -3,15 +3,14 @@ import axios from 'axios';
 
 export default function Wallet(){
 
-    const [state, setState] = useState([]);
+    const [state, setState] = useState([{}]);
     const [id, setId] = useState();
     const [total, setTotal] = useState()
 
     const transactions = []
-    const trans2 = []
-    const trans3 = []
-    const trans4 = []
-    const trans5 = []
+    const list2 = []
+    
+ 
 
     const changeHandler = e => {
         e.persist();
@@ -20,48 +19,6 @@ export default function Wallet(){
             [e.target.name] : e.target.value
         })
     }
-
-    const separate = () =>{
-        for (let i = 0; i < state.length; i++){
-            transactions.push(state[i].transactions);
-        };
-    }
-
-    const formulate = () =>{
-        for (let i = 0; i < transactions.length; i++){
-            trans2.push(transactions[i])
-        }
-    }
-
-    const granulate = () =>{
-        for (let i = 0; i < trans2.length; i++){
-            trans3.push(trans2[i])
-        }
-    }
-
-    const infuriate = () =>{
-        for (let i = 0; i < trans3.length; i++){
-            trans4.push(trans3[i])
-        }
-    }
-
-    const finalize = () =>{
-        for (let i = 0; i < trans4.length; i++){
-            trans5.push(trans4[i])
-        }
-    }
-
-    const tabulate = () =>{
-        let pretotal = 0
-        for(let i = 0; i < trans5.length; i++){
-            if(trans5[i].recipient === id){
-                setTotal(pretotal + trans5[i].amount)
-            }
-        }
-        console.log(pretotal)
-    }
-
-
 
     const grab = () => {
         axios
@@ -74,16 +31,23 @@ export default function Wallet(){
         grab();
     }, [])
 
-    separate();
-    formulate();
-    granulate();
-    infuriate();
-    finalize();
-    tabulate();
+    const sortitout = () => {
+        for(let i=0;i<state.length;i++){
+            transactions.push(state[i].transactions)
+        }
+        for(let i=0;i<transactions.length;i++){
+            list2.push(transactions[1])
+        }
+    
+    }
 
-    console.log(id)
-    console.log(state)
-    console.log(trans5)
+    sortitout();
+
+    // console.log(id)
+    // console.log(state)
+    console.log(transactions)
+    console.log(list2)
+    
     
 
     return(
