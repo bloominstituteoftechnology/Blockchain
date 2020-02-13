@@ -119,7 +119,7 @@ my_id.txt
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
 # Carthage/Checkouts
 
-Carthage/Build
+Carthage
 
 ### CocoaPods ###
 ## CocoaPods GitIgnore Template
@@ -305,3 +305,4 @@ Dependencies/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.gitignore.io/api/linux,swift,xcode,macos,carthage,cocoapods,objective-c
+

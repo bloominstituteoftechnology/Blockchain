@@ -7,8 +7,11 @@
 //
 
 import SwiftUI
+import NetworkHandler
 
 struct ContentView: View {
+
+	private let controller = ChainController()
 
 	@State private var data = ["a", "b", "c"]
 
@@ -24,23 +27,7 @@ struct ContentView: View {
 					Text("Enter your ID: ")
 					TextField("mahname", text: $userID)
 						.textFieldStyle(RoundedBorderTextFieldStyle())
-					Button(action: {
-						switch Int.random(in: 0...4) {
-						case 0:
-							self.currentBalance += 10
-						case 1:
-							self.currentBalance -= 10.5
-						case 2:
-							self.totalReceived += 5
-						case 3:
-							self.totalSent += 6.4
-						case 4:
-							let alpha  = Array("abcdefghijklmnopqrstuvwxyz").compactMap { String($0) }
-							self.data.append(alpha.randomElement() ?? "wrong")
-						default:
-							print("defaulted?")
-						}
-					}) {
+					Button(action: fetchBalance) {
 						Text("Submit")
 					}
 				}
@@ -62,6 +49,12 @@ struct ContentView: View {
 					Text(datum)
 				}
 			}
+		}
+	}
+
+	func fetchBalance() {
+		controller.getLatestChain { controller in
+			print(controller.chain)
 		}
 	}
 }

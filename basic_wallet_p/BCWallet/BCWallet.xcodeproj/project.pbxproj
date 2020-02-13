@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,11 @@
 		33C45B5C23F5F12E00D73231 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B5B23F5F12E00D73231 /* Assets.xcassets */; };
 		33C45B5F23F5F12E00D73231 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B5E23F5F12E00D73231 /* Preview Assets.xcassets */; };
 		33C45B6223F5F12E00D73231 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B6023F5F12E00D73231 /* LaunchScreen.storyboard */; };
+		33C45B6A23F602A700D73231 /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B6923F602A700D73231 /* Cartfile */; };
+		33C45B6D23F6031100D73231 /* input.xcfilelist in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B6B23F6031100D73231 /* input.xcfilelist */; };
+		33C45B6E23F6031100D73231 /* output.xcfilelist in Resources */ = {isa = PBXBuildFile; fileRef = 33C45B6C23F6031100D73231 /* output.xcfilelist */; };
+		33C45B7123F6032F00D73231 /* NetworkHandler.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33C45B7023F6032F00D73231 /* NetworkHandler.framework */; };
+		33C45B7423F603B900D73231 /* ChainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C45B7323F603B900D73231 /* ChainController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,11 @@
 		33C45B5E23F5F12E00D73231 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		33C45B6123F5F12E00D73231 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		33C45B6323F5F12E00D73231 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		33C45B6923F602A700D73231 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		33C45B6B23F6031100D73231 /* input.xcfilelist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcfilelist; path = input.xcfilelist; sourceTree = "<group>"; };
+		33C45B6C23F6031100D73231 /* output.xcfilelist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcfilelist; path = output.xcfilelist; sourceTree = "<group>"; };
+		33C45B7023F6032F00D73231 /* NetworkHandler.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkHandler.framework; path = Carthage/Build/iOS/NetworkHandler.framework; sourceTree = "<group>"; };
+		33C45B7323F603B900D73231 /* ChainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				33C45B7123F6032F00D73231 /* NetworkHandler.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,8 +51,12 @@
 		33C45B4923F5F12A00D73231 = {
 			isa = PBXGroup;
 			children = (
+				33C45B6923F602A700D73231 /* Cartfile */,
+				33C45B6B23F6031100D73231 /* input.xcfilelist */,
+				33C45B6C23F6031100D73231 /* output.xcfilelist */,
 				33C45B5423F5F12A00D73231 /* BCWallet */,
 				33C45B5323F5F12A00D73231 /* Products */,
+				33C45B6F23F6032300D73231 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -59,6 +74,7 @@
 				33C45B5523F5F12A00D73231 /* AppDelegate.swift */,
 				33C45B5723F5F12A00D73231 /* SceneDelegate.swift */,
 				33C45B5923F5F12A00D73231 /* ContentView.swift */,
+				33C45B7323F603B900D73231 /* ChainController.swift */,
 				33C45B5B23F5F12E00D73231 /* Assets.xcassets */,
 				33C45B6023F5F12E00D73231 /* LaunchScreen.storyboard */,
 				33C45B6323F5F12E00D73231 /* Info.plist */,
@@ -75,6 +91,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		33C45B6F23F6032300D73231 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				33C45B7023F6032F00D73231 /* NetworkHandler.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -85,6 +109,7 @@
 				33C45B4E23F5F12A00D73231 /* Sources */,
 				33C45B4F23F5F12A00D73231 /* Frameworks */,
 				33C45B5023F5F12A00D73231 /* Resources */,
+				33C45B7223F6033C00D73231 /* Run Script - Carthage */,
 			);
 			buildRules = (
 			);
@@ -134,12 +159,38 @@
 			buildActionMask = 2147483647;
 			files = (
 				33C45B6223F5F12E00D73231 /* LaunchScreen.storyboard in Resources */,
+				33C45B6D23F6031100D73231 /* input.xcfilelist in Resources */,
 				33C45B5F23F5F12E00D73231 /* Preview Assets.xcassets in Resources */,
+				33C45B6E23F6031100D73231 /* output.xcfilelist in Resources */,
+				33C45B6A23F602A700D73231 /* Cartfile in Resources */,
 				33C45B5C23F5F12E00D73231 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		33C45B7223F6033C00D73231 /* Run Script - Carthage */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"$(SRCROOT)/input.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "Run Script - Carthage";
+			outputFileListPaths = (
+				"$(SRCROOT)/output.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks\n/usr/local/bin/carthage outdated --xcode-warnings\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		33C45B4E23F5F12A00D73231 /* Sources */ = {
@@ -149,6 +200,7 @@
 				33C45B5623F5F12A00D73231 /* AppDelegate.swift in Sources */,
 				33C45B5823F5F12A00D73231 /* SceneDelegate.swift in Sources */,
 				33C45B5A23F5F12A00D73231 /* ContentView.swift in Sources */,
+				33C45B7423F603B900D73231 /* ChainController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -288,6 +340,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"BCWallet/Preview Content\"";
 				DEVELOPMENT_TEAM = VXUQXR6S56;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = BCWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -308,6 +364,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"BCWallet/Preview Content\"";
 				DEVELOPMENT_TEAM = VXUQXR6S56;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = BCWallet/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
