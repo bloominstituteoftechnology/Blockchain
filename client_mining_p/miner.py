@@ -186,7 +186,7 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        # TODO: Return the chain and its current lengt
         'chain': blockchain.chain,
         'length': len(blockchain.chain),
     }
