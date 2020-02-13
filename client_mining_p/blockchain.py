@@ -57,7 +57,7 @@ class Blockchain(object):
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
 
-        return guess_hash[:6] == "000000"
+        return guess_hash[:3] == "000"
 
 
 app = Flask(__name__)
@@ -71,21 +71,30 @@ print(blockchain.hash(blockchain.last_block))
 @app.route('/mine', methods=['POST'])
 def mine():
 
-    data = request.get_json(force=False, silent=False, cache=True)
-    # proof = blockchain.proof_of_work(blockchain.last_block)
-
-    print(data)
-    prove = data['proof']
-
-    previous_hash = blockchain.hash(blockchain.last_block)
-    new_block = blockchain.new_block(prove, previous_hash)
+    data = request.get_json()
     
-    response = {
-        "block": new_block
-    }
+    proof = data['proof']
 
-    if prove:
-        return jsonify(response, "Nice going"), 400
+    last_block = blockchain.last_block
+
+    last_block_string = json.dumps(last_block, sort_keys =True)
+
+    if blockchain.valid_proof(last_block_string, proof):
+
+        previous_hash = blockchain.hash(blockchain.last_block)
+        
+        new_block = blockchain.new_block(proof, previous_hash)
+    
+        response = {
+            "block": new_block
+        }
+
+        return jsonify(response), 200
+    else:
+        response = {
+            "message": "Bad proof"
+        }
+    return jsonify(response), 200
     
     
 
@@ -103,12 +112,10 @@ def full_chain():
     }
     return jsonify(response), 200
 
-@app.route('/last', methods=['GET'])
+@app.route('/last_block', methods=['GET'])
 def last_block():
     response = {
-        # TODO: Return the chain and its current length
-        'chain': blockchain.chain[-1],
-        'length': 1,
+        'last_block': blockchain.last_block
     }
     return jsonify(response), 200
 
