@@ -56,7 +56,9 @@ class Blockchain(object):
         transaction = {
             "sender": sender,
             "recipient": recipient,
-            "amount": float(amount)
+            "amount": float(amount),
+            "timestamp": time(),
+            "id": str(uuid4())
         }
 
         self.current_transactions.append(transaction)
