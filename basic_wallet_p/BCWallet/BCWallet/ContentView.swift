@@ -13,7 +13,7 @@ struct ContentView: View {
 
 	private let controller = ChainController()
 
-	@State private var data = ["a", "b", "c"]
+	@State private var data = [Transaction]()
 
 	@State private var userID = ""
 	@State private var totalSent = 0.0
@@ -46,7 +46,7 @@ struct ContentView: View {
 
 			Section(header: Text("Data")) {
 				List(data, id: \.self) { datum in
-					Text(datum)
+					Text("\(datum.description)")
 				}
 			}
 		}
@@ -54,7 +54,10 @@ struct ContentView: View {
 
 	func fetchBalance() {
 		controller.getLatestChain { controller in
-			let balanceInfo = controller.balance(for: self.userID)
+			let transactions = controller.transactions(for: self.userID)
+			self.data = transactions
+
+			let balanceInfo = controller.balance(for: self.userID, transactions: transactions)
 			self.currentBalance = balanceInfo.balance
 			self.totalSent = balanceInfo.sent
 			self.totalReceived = balanceInfo.received

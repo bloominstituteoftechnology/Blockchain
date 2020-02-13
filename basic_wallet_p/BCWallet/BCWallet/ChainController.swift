@@ -28,14 +28,16 @@ class ChainController {
 		}
 	}
 
-	func balance(for user: String) -> (balance: Double, sent: Double, received: Double) {
+	func transactions(for user: String) -> [Transaction] {
+		chain.flatMap { $0.transactions }.filter { $0.sender == user || $0.recipient == user }
+	}
+
+	func balance(for user: String, transactions: [Transaction]) -> (balance: Double, sent: Double, received: Double) {
 		var balance = 0.0
 		var totalSent = 0.0
 		var totalReceived = 0.0
 
-		let xtions = chain.flatMap { $0.transactions }.filter { $0.sender == user || $0.recipient == user }
-
-		for transaction in xtions {
+		for transaction in transactions {
 			if transaction.sender == user {
 				balance -= transaction.amount
 				totalSent += transaction.amount
@@ -63,8 +65,14 @@ struct Block: Codable {
 	let transactions: [Transaction]
 }
 
-struct Transaction: Codable {
+struct Transaction: Codable, Hashable, CustomStringConvertible {
 	let sender: String
 	let recipient: String
 	let amount: Double
+	let timestamp: Double
+	let id: String
+
+	var description: String {
+		"\(sender) sent \(amount) coins to \(recipient) at \(timestamp)"
+	}
 }
