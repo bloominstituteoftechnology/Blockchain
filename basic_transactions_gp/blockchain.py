@@ -14,7 +14,7 @@ class Blockchain(object):
         # Create the genesis block
         self.new_block(previous_hash="-1", proof=0)
 
-        self.difficulty = 5
+        self.difficulty = 6
 
     def new_block(self, proof, previous_hash=None):
         """

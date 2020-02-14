@@ -90,8 +90,6 @@ struct ContentView: View {
 	func sendMoney() {
 		guard let amount = Double(sendAmount) else { return }
 
-		sendAmount = ""
-		recipient = ""
 		controller.sendMoney(from: userID, to: recipient, amount: amount) { controller, error in
 			if let error = error {
 				print("error: \(error)")
@@ -99,6 +97,9 @@ struct ContentView: View {
 			}
 			self.fetchBalance()
 		}
+
+		sendAmount = ""
+		recipient = ""
 	}
 }
 
