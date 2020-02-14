@@ -177,7 +177,7 @@ def mine():
         return jsonify(response), 200
     else:
         response = {
-            "message": "Bad proof"
+            "message": "failure"
         }
 
         return jsonify(response), 200

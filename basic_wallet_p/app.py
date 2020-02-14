@@ -69,21 +69,21 @@ if __name__ == '__main__':
     # Prints a message to confirm creation of new user
     print(f"\nNew user created for {newUser.name}!\n")
     # Asks the user what it would like to do
-    next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+    next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
     # Loops forever until user enters q
     while True:
         if (next_input == '1'):
             new_name = str(input('\nWhat would you like to change your name to?\n'))
             print(newUser.change_name(new_name))
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
 
         elif (next_input == '2'):
             print(newUser.get_balance())
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
 
         elif (next_input == '3'):
             print(newUser.get_transactions())
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
 
         elif (next_input == '4'):
             node = "http://127.0.0.1:5000"
@@ -98,10 +98,10 @@ if __name__ == '__main__':
             r = requests.post(url=node + '/transaction/new', json=post_data)
             data = r.json()
             print('\n' + data['message'] + '\n')
-            newUser.balance -= amount
+            newUser.balance -= int(amount)
             newUser.transactions.append({'sender': newUser.name, 'recipient': recip, 'amount': int(amount), 'index': data['message']})
 
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
 
         elif (next_input == '5'):
             node = "http://127.0.0.1:5000"
@@ -126,11 +126,11 @@ if __name__ == '__main__':
 
                 r = requests.post(url=node + "/mine", json=post_data)
                 data = r.json()
-
+                print(data['message'])
                 # TODO: If the server responds with a 'message' 'success'
                 # add 1 to the number of coins mined and print it.  Otherwise,
                 # print the message from the server.
-                if (data['message'] == 'Success'):
+                if (data['message'].lower() == 'success'):
                     newUser.balance += 1
                     coins_mined += 1
                     print(f'You have mined {coins_mined} coin(s). This round.')
@@ -139,11 +139,11 @@ if __name__ == '__main__':
                 stop = input("\n Would you like to stop mining?(y/n)\n")
                 if (stop.lower() == 'y'):
                     break
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
 
         elif (next_input.lower() == 'q'):
             break
 
         else:
             print('You did not give a proper input. Try again...')
-            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
+            next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n~~~~~~~~~>"))
