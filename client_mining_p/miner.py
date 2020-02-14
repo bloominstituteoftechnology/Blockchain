@@ -77,16 +77,20 @@ def submitProof(new_proof):
 
 if __name__ == '__main__':
     # What is the server address? IE `python3 miner.py https://server.com/api/`
-    if len(sys.argv) > 1:
-        node = sys.argv[1]
-    else:
-        node = "http://localhost:5000"
+    # if len(sys.argv) > 1:
+    #     node = sys.argv[1]
+    # else:
+    node = "http://localhost:5000"
 
     # Load ID
-    f = open("my_id.txt", "r")
-    id = f.read()
+    if len(sys.argv) > 1:
+        id = sys.argv[1]
+    else:
+        f = open("my_id.txt", "r")
+        id = f.read()
+        f.close()
+
     print("ID is", id)
-    f.close()
 
     coins = 0
 

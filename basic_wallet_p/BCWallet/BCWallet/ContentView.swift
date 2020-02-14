@@ -20,18 +20,41 @@ struct ContentView: View {
 	@State private var totalReceived = 0.0
 	@State private var currentBalance = 0.0
 
-    var body: some View {
+	@State private var sendAmount = ""
+	@State private var recipient = ""
+
+	var body: some View {
 		Form {
 			Section(header: Text("Sign In:")) {
 				HStack(alignment: .center) {
 					Text("Enter your ID: ")
 					TextField("mahname", text: $userID)
 						.textFieldStyle(RoundedBorderTextFieldStyle())
+						.textContentType(.username)
+						.autocapitalization(.none)
 					Button(action: fetchBalance) {
 						Text("Submit")
 					}
 				}
 				.frame(maxWidth: .infinity)
+			}
+
+			Section(header: Text("Send Money")) {
+				HStack {
+					TextField("0", text: $sendAmount)
+						.textFieldStyle(RoundedBorderTextFieldStyle())
+						.keyboardType(.decimalPad)
+						.textContentType(.oneTimeCode)
+						.autocapitalization(.none)
+					Text("to")
+					TextField("recipient", text: $recipient)
+						.textFieldStyle(RoundedBorderTextFieldStyle())
+						.textContentType(.username)
+						.autocapitalization(.none)
+					Button(action: sendMoney) {
+						Text("Send")
+					}
+				}
 			}
 
 			Section(header: Text("Current Balance")) {
@@ -61,6 +84,20 @@ struct ContentView: View {
 			self.currentBalance = balanceInfo.balance
 			self.totalSent = balanceInfo.sent
 			self.totalReceived = balanceInfo.received
+		}
+	}
+
+	func sendMoney() {
+		guard let amount = Double(sendAmount) else { return }
+
+		sendAmount = ""
+		recipient = ""
+		controller.sendMoney(from: userID, to: recipient, amount: amount) { controller, error in
+			if let error = error {
+				print("error: \(error)")
+				return
+			}
+			self.fetchBalance()
 		}
 	}
 }

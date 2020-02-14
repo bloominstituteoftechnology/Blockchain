@@ -14,8 +14,10 @@ class ChainController {
 	var chain: [Block] = []
 	let handler = NetworkHandler()
 
+	private let baseURL = URL(string: "http://localhost:5000")!
+
 	func getLatestChain(completion: @escaping (ChainController) -> Void) {
-		let url = URL(string: "http://localhost:5000/chain")!
+		let url = baseURL.appendingPathComponent("chain")
 
 		handler.transferMahCodableDatas(with: url.request) { (result: Result<Chain, NetworkError>) -> Void in
 			switch result {
@@ -25,6 +27,38 @@ class ChainController {
 				print("error fetching chain: \(error)")
 			}
 			completion(self)
+		}
+	}
+
+	func sendMoney(from sender: String, to recipient: String, amount: Double, completion: @escaping (ChainController, NetworkError?) -> Void) {
+		let url = baseURL
+			.appendingPathComponent("transaction")
+			.appendingPathComponent("new")
+
+		let trans = Transaction(sender: sender, recipient: recipient, amount: amount, timestamp: Date().timeIntervalSince1970, id: "")
+
+		let json = try! JSONEncoder().encode(trans)
+
+		var request = url.request
+		request.httpMethod = .post
+		request.httpBody = json
+		request.addValue(.contentType(type: .json), forHTTPHeaderField: .commonKey(key: .contentType))
+
+		handler.transferMahCodableDatas(with: request) { (result: Result<Message, NetworkError>) -> Void in
+			switch result {
+			case .success:
+				completion(self, nil)
+			case .failure(let error):
+				completion(self, error)
+				switch error {
+				case .httpNon200StatusCode(code: let code, data: let data):
+					print(code)
+					let str = String(data: data!, encoding: .utf8)!
+					print(str)
+				default:
+					break
+				}
+			}
 		}
 	}
 
@@ -75,4 +109,8 @@ struct Transaction: Codable, Hashable, CustomStringConvertible {
 	var description: String {
 		"\(sender) sent \(amount) coins to \(recipient) at \(timestamp)"
 	}
+}
+
+struct Message: Codable {
+	let message: String
 }
