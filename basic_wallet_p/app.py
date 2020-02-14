@@ -98,7 +98,7 @@ if __name__ == '__main__':
             r = requests.post(url=node + '/transaction/new', json=post_data)
             data = r.json()
             print('\n' + data['message'] + '\n')
-
+            newUser.balance -= amount
             newUser.transactions.append({'sender': newUser.name, 'recipient': recip, 'amount': int(amount), 'index': data['message']})
 
             next_input = str(input("What would you like to do:\n Change name(1)\n Get balance(2)\n Get transactions(3)\n Make transaction(4)\n Mine for coin(5)\n or Quit(q)?\n"))
