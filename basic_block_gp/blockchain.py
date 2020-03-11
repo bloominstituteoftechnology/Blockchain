@@ -2,7 +2,6 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
-
 from flask import Flask, jsonify, request
 
 
@@ -16,9 +15,7 @@ class Blockchain(object):
 
     def new_block(self, proof, previous_hash=None):
         """
-        Create a new Block in the Blockchain
-
-        A block should have:
+        Create a new Block in the Blockchain:
         * Index
         * Timestamp
         * List of current transactions
@@ -31,13 +28,19 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': self.current_transactions
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.last_block)
         }
 
         # Reset the current list of transactions
-        # Append the chain to the block
+        self.current_transactions = []
+        # Append the block to chain
+        self.chain.append(block)
         # Return the new block
-        pass
+        return self.chain
 
     def hash(self, block):
         """
@@ -49,56 +52,52 @@ class Blockchain(object):
 
         # Use json.dumps to convert json into a string
         # Use hashlib.sha256 to create a hash
-        # It requires a `bytes-like` object, which is what
-        # .encode() does.
-        # It converts the Python string into a byte string.
-        # We must make sure that the Dictionary is Ordered,
-        # or we'll have inconsistent hashes
+        # Use .encode() to convert Python string into a BYTE string.
+        # Sort dict keys or we'll have inconsistent hashes
 
-        # TODO: Create the block_string
+        string_block = json.dumps(block, sort_keys=True)
+        raw_hash = hashlib.sha256(string_block.encode())
+        
 
-        # TODO: Hash this string using sha256
+        # The sha256 function returns the hash in a raw string that includes escaped characters.
+        # This can be hard to read, but .hexdigest() converts hash to a string of hexadecimal characters
+        hex_hash = raw_hash.hexdigest()
+        return hex_hash
 
-        # By itself, the sha256 function returns the hash in a raw string
-        # that will likely include escaped characters.
-        # This can be hard to read, but .hexdigest() converts the
-        # hash to a string of hexadecimal characters, which is
-        # easier to work with and understand
-
-        # TODO: Return the hashed block string in hexadecimal format
-        pass
-
-    @property
-    def last_block(self):
+    @property #acts like property, not method - don't have to use ()
+    def last_block(self): #O(1)
         return self.chain[-1]
 
     def proof_of_work(self, block):
         """
         Simple Proof of Work Algorithm
         Stringify the block and look for a proof.
-        Loop through possibilities, checking each one against `valid_proof`
-        in an effort to find a number that is a valid proof
+        Loop through possibilities until a num that is a valid proof is found
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
-        # return proof
+        block_string = json.dumps(block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof): #until num proof is found
+            proof += 1
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
         """
-        Validates the Proof:  Does hash(block_string, proof) contain 3
-        leading zeroes?  Return true if the proof is valid
+        Validates the Proof:  
+        Does hash(block_string, proof) contain 3 leading zeroes?  
+        Return true if so
         :param block_string: <string> The stringified block to use to
         check in combination with `proof`
         :param proof: <int?> The value that when combined with the
         stringified previous block results in a hash that has the
         correct number of leading zeroes.
-        :return: True if the resulting hash is a valid proof, False otherwise
+        :return: True if valid proof, False otherwise
         """
-        # TODO
-        pass
-        # return True or False
+        guess = f'{block_string}{proof}'
+        guess_hash = hashlib.sha256(guess).hexdigest()
+
+        return guess_hash[:3] =='000'
 
 
 # Instantiate our Node
@@ -114,11 +113,13 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
-
+    proof = blockchain.proof_of_work(blockchain.last_block)
     # Forge the new Block by adding it to the chain with the proof
+    previous_hash = blockchain.hash(blockchain.last_block)
+    block = blockchain.new_block(proof, previous_hash)
 
     response = {
-        # TODO: Send a JSON response with the new block
+        'new_block': block
     }
 
     return jsonify(response), 200
@@ -127,7 +128,9 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'message': 'hello'
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain)'
     }
     return jsonify(response), 200
 
