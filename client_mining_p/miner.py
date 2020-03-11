@@ -4,8 +4,19 @@ import requests
 import sys
 import json
 
+coins = 0
+
 
 def proof_of_work(block):
+
+    block_string = json.dumps(block, sort_keys=True)
+    proof = 0
+    # loop while the return from a call to valid proof is False
+    while block.valid_proof(block_string, proof) is False:
+        proof += 1
+    # return proof
+    return proof
+
     """
     Simple Proof of Work Algorithm
     Stringify the block and look for a proof.
@@ -13,8 +24,7 @@ def proof_of_work(block):
     in an effort to find a number that is a valid proof
     :return: A valid proof for the provided block
     """
-    pass
-
+   
 
 def valid_proof(block_string, proof):
     """
@@ -27,7 +37,13 @@ def valid_proof(block_string, proof):
     correct number of leading zeroes.
     :return: True if the resulting hash is a valid proof, False otherwise
     """
+    guess = f"{block_string}{proof}".encode()
+    # create a guess hash and hexdigest it
+    guess_hash = hashlib.sha256(guess).hexdigest()
     pass
+    # then return True if the guess hash has the valid number of leading zeros otherwise return False
+    return guess_hash[:6] == "000000"
+   
 
 
 if __name__ == '__main__':
@@ -57,6 +73,9 @@ if __name__ == '__main__':
 
         # TODO: Get the block from `data` and use it to look for a new proof
         # new_proof = ???
+        print(data)
+        new_proof = data
+        # I'm not fully sure about this line above. I'm getting the last block objet with data but I'm not sure how to get the proof from that.
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
@@ -64,7 +83,13 @@ if __name__ == '__main__':
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
 
+
+
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+        if data["message"] == "New Block Forged":
+            coins += 1
+            print(f'New number of coins = {coins}')
+        else:
+            print(data["message"])    
