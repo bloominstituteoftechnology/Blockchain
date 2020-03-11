@@ -84,25 +84,6 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    # def proof_of_work(self, block):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     Stringify the block and look for a proof.
-    #     Loop through possibilities, checking each one against `valid_proof`
-    #     in an effort to find a number that is a valid proof
-    #     :return: A valid proof for the provided block
-    #     """
-    #     # TODO
-     
-    #     block_string = json.dumps(block, sort_keys=True)
-
-    #     proof = 0
-
-    #     while self.valid_proof(block_string, proof) is False:
-    #         proof += 1
-
-    #     return proof
-
     @staticmethod
     def valid_proof(block_string, proof):
         """
@@ -120,7 +101,7 @@ class Blockchain(object):
         guess = f"{block_string}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
 
-        return guess_hash[:1] == "0"
+        return guess_hash[:6] == "000000"
 
 
 # Instantiate our Node
@@ -148,7 +129,7 @@ def mine():
         return jsonify(error_response), 400
 
 
-    last_block_string = json.dumps(blockchain.last_block)
+    last_block_string = json.dumps(blockchain.last_block, sort_keys=True)
 
     if blockchain.valid_proof(last_block_string, data['proof']):
         
@@ -156,7 +137,7 @@ def mine():
         block = blockchain.new_block(data['proof'], previous_hash)
 
         response = {
-            "message": "Success!, congrats on the new block"
+            "message": "New Block Forged"
         }
 
         return jsonify(response), 200
@@ -184,7 +165,7 @@ def full_chain():
 @app.route('/last_block', methods=['GET'])
 def get_last_block():
     response = {
-        "last_block": blockchain.last_block
+        "block": blockchain.last_block
     }
 
     return jsonify(response), 200
