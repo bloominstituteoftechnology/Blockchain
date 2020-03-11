@@ -186,6 +186,15 @@ def full_chain():
     return jsonify(response), 200
 
 
+#lask_block endpoint returns the last block in the chain
+@app.route('/last_block', methods=['GET'])
+def last_block():
+    response = {
+        'last-block': blockchain.last_block
+    }
+    return jsonify(response), 200
+
+
 # Run the program on port 5000
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
