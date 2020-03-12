@@ -18,7 +18,7 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
             <input
             name="newUser"
-            value="newUser"
+            value={newUser}
             onChange={handleChange} />
             <button type="submit">{user ? "Change User" : "Open Wallet"}</button>
         </form>

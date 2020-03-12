@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.send-form {
+  display:flex;
+  flex-direction:column;
+  width:50%;
+  margin: 5% auto;
+}
+
+.pending {
+  color:red;
+}
