@@ -1,6 +1,6 @@
 import hashlib
 import requests
-
+from time import time
 import sys
 import json
 
@@ -56,9 +56,10 @@ if __name__ == '__main__':
     id = f.read()
     print("ID is", id)
     f.close()
-
+    coins = 0
     # Run forever until interrupted
     while True:
+        start_time = time()
         r = requests.get(url=node + "/last_block")
         # Handle non-json response
         try:
@@ -79,10 +80,22 @@ if __name__ == '__main__':
         post_data = {"proof": new_proof, "id": id}
 
         r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
 
+        try:
+            data = r.json()
+
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+            break
+
+        print('data', data)
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        print(data['message'])
-        pass
+        if data['message'] == "New Block Forged":
+            coins += 1
+            end_time = time()
+            print(f"{id} has mined {coins} coins so far.\n{int(end_time - start_time)} seconds to mine previous block.")
+        
