@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mining Home</title>
+    </head>
+    <body>
+        <h1>Whatup Coin Dawg</h1>
+        <h4>Choose User Id</h4>
+        <form>
+            type='text'
+            name='user_id'
+            value='user_id'
+            placeholder= "ID" 
+        </form>
+
+        {%for transaction in new_transaction%} 
+            <h1>{{transaction.sender}}</h1>
+            <h1>{{transaction.reciever}}</h1>
+            <h1>{{transaction.amount}}</h1>
+        {%endfor%}
+    </body>
+</html>
+
+* Allow the user to enter, save, or change the `id` used for the program
+* Display the current balance for that user
+* Display a list of all transactions for this user, including sender and recipient
