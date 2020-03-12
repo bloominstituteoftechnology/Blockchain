@@ -107,26 +107,7 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    # def proof_of_work(self, block):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     Stringify the block and look for a proof.
-    #     Loop through possibilities, checking each one against `valid_proof` O(n)
-    #     in an effort to find a number that is a valid proof
-    #     :return: A valid proof for the provided block
 
-    #     Brute force solution - no algorithmic solution for this
-
-    #     """
-    #     # TODO
-    #       #get block and turn it into string
-    #     block_string = json.dumps(block, sort_keys=True)
-    #     proof = 0 
-
-    #     while self.valid_proof(block_string, proof) is False:
-    #         proof +=1
-    #     # return proof
-    #     return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -148,7 +129,7 @@ class Blockchain(object):
 
         # return True or False
         # first three, otherwise takes 2-3 min to find a hash
-        return guess_hash[:6] == "000000"
+        return guess_hash[:3] == "000"
 
 
 
@@ -162,19 +143,57 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
-def mine():
-    # Run the proof of work algorithm to get the next proof
-    proof = blockchain.proof_of_work(blockchain.last_block)
-    # Forge the new Block by adding it to the chain with the proof
-    previous_hash = blockchain.hash(blockchain.last_block)
-    block = blockchain.new_block(proof, previous_hash)
-    response = {
-        # TODO: Send a JSON response with the new block
-        'new_block': block
-    }
+@app.route('/')
+def api_up():
+    return "Blockchain API is working!"
 
-    return jsonify(response), 200
+'''
+Change to post
+Use data = request.get_json() to get data
+Check that proof and id are present - 
+Return msg validating success or failure
+A valid proof should fail for all senders except the first
+'''
+@app.route('/mine', methods=['POST'])
+def mine():
+     # Handle Non-JSON response - Parses the incoming JSON request data and returns it. 
+    values = request.get_json()
+    #breakpoint() to investigate what's in values 
+    required = ["proof", "id"]
+
+    # Check that proof and id are in POSTed data - for everything in a, check everything in b - nested for loop - O(2n) linear bc len of required will never change
+    if not all(k in values for k in required):
+        response = {'message': "Missing Values Error: Both proof and id must be supplied"}
+        return jsonify(response), 400
+    
+    #get submitted proof from values dict
+    submitted_proof = values['proof']
+
+    #Get last block and test submitted proof
+    block_string = json.dumps(blockchain.last_block, sort_keys = True)
+
+    #return true or false if proof is valid 
+    is_valid = blockchain.valid_proof(block_string, submitted_proof )
+    # print('new is valid', is_valid)
+
+    if is_valid is True: 
+        #stringify last block 
+        previous_hash = blockchain.hash(blockchain.last_block)
+        forged_block = blockchain.new_block(submitted_proof, previous_hash)
+        
+        print("New block mined")
+        #If they are in POSted data
+        response = {
+            "message": "New Block Forged",
+            "forged_block": forged_block
+        }
+        return jsonify(response), 201
+    else:
+        response = {
+            "message": "Error: Proof was invalid or already submitted"
+        }
+        return jsonify(response), 200
+
 
 #if things are working, will this chain endpoint to anything? itll be empty but itll show up 
 @app.route('/chain', methods=['GET'])
@@ -187,10 +206,11 @@ def full_chain():
 
 
 #lask_block endpoint returns the last block in the chain
+#no parentehesis needed for last_block bc a property decorator lets you access as property instead of method
 @app.route('/last_block', methods=['GET'])
-def last_block():
+def return_last_block():
     response = {
-        'last-block': blockchain.last_block
+        'last-block': blockchain.last_block 
     }
     return jsonify(response), 200
 

@@ -5,6 +5,10 @@ import sys
 import json
 
 
+#server only alidates a proof
+#minor does all the work so minor has to have proof of work function s
+
+
 def proof_of_work(block):
     """
     Simple Proof of Work Algorithm
@@ -13,7 +17,17 @@ def proof_of_work(block):
     in an effort to find a number that is a valid proof
     :return: A valid proof for the provided block
     """
-    pass
+    # TODO
+    #get block and turn it into string
+    #The block dictionary needs to be a string before it can be hashed. This just turns the dictionary into a string. block_string and proof are then used to create the guess_hash
+    block_string = json.dumps(block, sort_keys=True)
+    proof = 0 
+
+    while valid_proof(block_string, proof) is False:
+        proof +=1
+    # return proof
+    return proof
+
 
 
 def valid_proof(block_string, proof):
@@ -27,7 +41,16 @@ def valid_proof(block_string, proof):
     correct number of leading zeroes.
     :return: True if the resulting hash is a valid proof, False otherwise
     """
-    pass
+    #encode returns encoded version of given string
+    #strings are stored as unicode (each character represnted by a code point) - so each string is a sequence of unicode points
+    #for efficient storage of these strings, sequeunce of code points are converted ito set of bytes - this process is known as ENCODING
+    #by default, encode uses utf-8 for default 
+
+    guess = f'{block_string}{proof}'.encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    #always returns false unless first 6 characters of hash are 0s
+    return guess_hash[:3] == "000"
+
 
 
 if __name__ == '__main__':
@@ -37,17 +60,52 @@ if __name__ == '__main__':
     else:
         node = "http://localhost:5000"
 
+
+ 
+
     # Load ID
     f = open("my_id.txt", "r")
     id = f.read()
     print("ID is", id)
     f.close()
 
+    coins_mined  = 0
     # Run forever until interrupted
     while True:
+        #Get the last block from the server
+        #does this work? 
         r = requests.get(url=node + "/last_block")
+        # print('here is the last block r', r)
         # Handle non-json response
+        
         try:
+            data = r.json()
+            print('here is the data in try', data)
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+            break
+       
+        print(f"\n Starting mining ")
+        # TODO: Get the block from `data` and use it to look for a new proof
+        
+        # Get lask block and that proof
+        print(data)
+        block = data['last-block']
+
+        #find our prooof of that
+        new_proof = proof_of_work(block)
+        
+        print(f'Proof found: {new_proof}')
+
+        # When found, POST it to the server {"proof": new_proof, "id": id}
+        post_data = {"proof": new_proof, "id": id}
+
+        #mine a coin 
+        r = requests.post(url=node + "/mine", json=post_data)
+
+        try: 
             data = r.json()
         except ValueError:
             print("Error:  Non-json response")
@@ -55,16 +113,14 @@ if __name__ == '__main__':
             print(r)
             break
 
-        # TODO: Get the block from `data` and use it to look for a new proof
-        # new_proof = ???
-
-        # When found, POST it to the server {"proof": new_proof, "id": id}
-        post_data = {"proof": new_proof, "id": id}
-
-        r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+        print('data msg', data.get('message'))
+        if data.get('message') == 'New Block Forged':
+            coins_mined += 1
+            print("Total coins mined: " + str(coins_mined))
+        else:
+            print(data.get('message'))
+
