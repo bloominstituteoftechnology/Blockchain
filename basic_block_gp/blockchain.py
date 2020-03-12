@@ -54,14 +54,18 @@ class Blockchain(object):
         """
 
         # Use json.dumps to convert json into a string
+        #                               (not necessary on pythn3) makes sure all keys in dictionary turned into string in alphebecic order
         string_block = json.dumps(block, sort_keys=True)
         # Use hashlib.sha256 to create a hash
         # It requires a `bytes-like` object, which is what
         # .encode() does.
+        #                       change string block to .encode() to change from object to string
         raw_hash = hashlib.sha256(string_block.encode())
         # It converts the Python string into a byte string.
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
+        # hex version comes raw hash
+
 
         # TODO: Create the block_string
 
@@ -100,7 +104,7 @@ class Blockchain(object):
     @staticmethod
     def valid_proof(block_string, proof):
         """
-        Validates the Proof:  Does hash(block_string + proof) contain 3
+        Validates the Proof:  Does hash(block_string, proof) contain 3 -- add 2 strings together
         leading zeroes?  Return true if the proof is valid
         :param block_string: <string> The stringified block to use to
         check in combination with `proof`
@@ -109,11 +113,11 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
-
+        # TODO
         guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-
-        return guess_hash[:6] == "000000"
+        #                   slice off first 3 and see if it = all 0's
+        return guess_hash[:6] == '000000'
 
 
 # Instantiate our Node
@@ -136,7 +140,7 @@ def mine():
     block = blockchain.new_block(proof, previous_hash)
 
     response = {
-        'new_block': block
+        'new_block': block,
     }
 
     return jsonify(response), 200
@@ -145,9 +149,8 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
         'chain': blockchain.chain,
-        'length': len(blockchain.chain)
+        'length': len(blockchain.chain),
     }
     return jsonify(response), 200
 
