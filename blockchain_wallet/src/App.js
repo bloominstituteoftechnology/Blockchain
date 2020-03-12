@@ -6,8 +6,14 @@ import { UserContext } from './UserContext'
 function App() {
 
   const [ user, setUser ] = useState(null)
+  const [ chain, setChain ] = useState(null)
 
-  const providerValue = useMemo(() => ({user, setUser}), [user, setUser])
+  const providerValue = useMemo(() => ({
+    user, 
+    setUser, 
+    chain, 
+    setChain
+  }), [user, setUser, chain, setChain])
 
   return (
     <div className="App">

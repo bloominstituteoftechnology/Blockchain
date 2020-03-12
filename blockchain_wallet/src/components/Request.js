@@ -15,11 +15,14 @@ const RequestData = (props) => {
         if (value != ''){
             axios
             .get('http://localhost:5000/chain')
-            .then(res => console.log(res))
+            .then(res => {
+                ctx.setChain(res.data.chain)
+            })
             .catch(err => console.log(err))
         }
-
     }
+
+    console.log(ctx)
 
     return(
         <div>
