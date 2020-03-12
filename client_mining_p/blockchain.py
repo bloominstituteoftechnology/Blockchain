@@ -149,10 +149,8 @@ def mine():
 @app.route('/check', methods=['POST'])
  # if the incoming proof sent by the client is valid, and if so add the block
 def check():
-
-
 # Modify the mine endpoint to instead receive and validate or reject a new proof sent by a client.
-# It should accept a POST
+
 # Use data = request.get_json() to pull the data out of the POST
     data = request.get_json()
 # Note that request and requests both exist in this project
@@ -234,7 +232,7 @@ def get_last_block():
     if last_block and ("previous_hash" in last_block):
         last_block = last_block["previous_hash"] 
         # convert to string
-        convert_to_string = str(last_block)
+        convert_to_string = json.dumps(last_block) #str() worked before
         string.ascii_letters
         # tack on extra info
         newly_generated_alphanumeric_char = random.choice(string.ascii_letters)
