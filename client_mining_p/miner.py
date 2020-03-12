@@ -49,7 +49,7 @@ def valid_proof(block_string, proof):
     guess = f'{block_string}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
     #always returns false unless first 6 characters of hash are 0s
-    return guess_hash[:3] == "000"
+    return guess_hash[:6] == "000000"
 
 
 
@@ -80,18 +80,17 @@ if __name__ == '__main__':
         
         try:
             data = r.json()
-            print('here is the data in try', data)
         except ValueError:
             print("Error:  Non-json response")
             print("Response returned:")
             print(r)
             break
        
-        print(f"\n Starting mining ")
+        print(f"\nStarting mining ")
         # TODO: Get the block from `data` and use it to look for a new proof
         
         # Get lask block and that proof
-        print(data)
+
         block = data['last-block']
 
         #find our prooof of that
@@ -117,10 +116,10 @@ if __name__ == '__main__':
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        print('data msg', data.get('message'))
+        print(data['message'])
         if data.get('message') == 'New Block Forged':
             coins_mined += 1
             print("Total coins mined: " + str(coins_mined))
         else:
-            print(data.get('message'))
+            print(data['message'])
 

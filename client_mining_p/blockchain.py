@@ -129,7 +129,7 @@ class Blockchain(object):
 
         # return True or False
         # first three, otherwise takes 2-3 min to find a hash
-        return guess_hash[:3] == "000"
+        return guess_hash[:6] == "000000"
 
 
 
