@@ -15,21 +15,6 @@ class Blockchain(object):
 
         # Create the genesis block
         self.new_block(previous_hash=1, proof=100)
-     
-     def new_transaction(self, sender, recipient, amount):
-
-    # :param sender: <str> Address of the Recipient
-    # :param recipient: <str> Address of the Recipient
-    # :param amount: <int> Amount
-    # :return: <int> The index of the `block` that will hold this transaction
-
-    self.current_transactions.append({
-        'sender': sender,
-        'recipient': recipient,
-        'amount': amount
-    })
-
-    return self.last_block['index'] + 1
 
     def new_block(self, proof, previous_hash=None):
         """
@@ -99,7 +84,7 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-        
+
     @staticmethod
     def valid_proof(block_string, proof):
         """
@@ -128,23 +113,6 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
-@app.route('/transactions/new', methods=['POST'])
-def receive_transaction():
-    # TODO: Handle non json request
-    values = request.get_json()
-    # breakpoint()
-    required = ['sender', 'recipient', 'amount']
-    if not all(k in values for k in required):
-        response = {'message': "Missing values"}
-        return jsonify(response), 400
-​
-    index = blockchain.new_transaction(values['sender'],
-                                       values['recipient'],
-                                       values['amount'])
-​
-    response = {"message": f'Transaction will be added to block {index}'}
-    return jsonify(response), 201
-
 @app.route('/mine', methods=['POST'])
 def mine():
     values = request.get_json()
@@ -166,9 +134,7 @@ def mine():
     block_string = json.dumps(blockchain.last_block, sort_keys=True)
     if blockchain.valid_proof(block_string, submitted_proof):
               
-        blockchain.new_transactions('0',
-                                    values['id'],
-                                    1)
+
         # Forge the new Block by adding it to the chain with the proof
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(submitted_proof, previous_hash)
@@ -212,9 +178,6 @@ def prev_last_block():
         'last_block': blockchain.last_block
     }
     return jsonify(response), 200
-
-
-
 
 
 # Run the program on port 5000
