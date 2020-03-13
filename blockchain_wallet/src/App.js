@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import Header from './components/Header'
 import RequestData from './components/Request'
 import { UserContext } from './UserContext'
+import Wallet from './components/Wallet'
+import Transaction from './components/Transaction'
 
 function App() {
 
@@ -20,6 +22,8 @@ function App() {
       <Header />
         <UserContext.Provider value = {providerValue}>
           <RequestData />
+          <Wallet/>
+          <Transaction/>
         </UserContext.Provider>
     </div>
   );

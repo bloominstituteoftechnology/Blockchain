@@ -8,21 +8,17 @@ const RequestData = (props) => {
 
     const [ value, setValue ] =  useState("")
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
 
-        e.preventDefault()
-
-        if (value != ''){
-            axios
+        axios
             .get('http://localhost:5000/chain')
             .then(res => {
                 ctx.setChain(res.data.chain)
             })
             .catch(err => console.log(err))
-        }
-    }
 
-    console.log(ctx)
+    },[]) 
+
 
     return(
         <div>
@@ -36,7 +32,7 @@ const RequestData = (props) => {
                 setValue(e.target.value)
             }}
             ></input>
-            <button type = 'submit' onClick = {(e) => handleSubmit(e)}>GET WALLET</button>
+            <button type = 'submit' onClick = {() => ctx.setUser(value)}>GET WALLET</button>
         </div>
     )
 }
