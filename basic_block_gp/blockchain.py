@@ -29,6 +29,7 @@ class Blockchain(object):
         :param previous_hash: (Optional) <str> Hash of previous Block
         :return: <dict> New Block
         """
+        
 
         block = {
             # TODO
