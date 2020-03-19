@@ -31,13 +31,18 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'prev_hash': previous_hash,
         }
 
         # Reset the current list of transactions
         # Append the chain to the block
-        # Return the new block
-        pass
+        # Return the new block]
+        self.current_transactions = []
+        self.chain.append(block)
 
     def hash(self, block):
         """
@@ -55,18 +60,9 @@ class Blockchain(object):
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
 
-        # TODO: Create the block_string
-
-        # TODO: Hash this string using sha256
-
-        # By itself, the sha256 function returns the hash in a raw string
-        # that will likely include escaped characters.
-        # This can be hard to read, but .hexdigest() converts the
-        # hash to a string of hexadecimal characters, which is
-        # easier to work with and understand
-
-        # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hashlib.sha256(
+            json.dumps(block, sort_keys=True).encode()
+        ).hexdigest()
 
     @property
     def last_block(self):
@@ -109,6 +105,15 @@ node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
+
+
+
+## Routes
+
+@app.route('/', methods=['GET'])
+def home():
+    response = 'Home Page - Blockchain practice'
+    return response
 
 
 @app.route('/mine', methods=['GET'])
