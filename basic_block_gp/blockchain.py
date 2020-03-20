@@ -95,6 +95,10 @@ class Blockchain(object):
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:6] == '000000'
 
+    def new_transaction(self, sender, recipient, amount):
+        transaction = {"sender": sender, "recipient": recipient, "amount": amount}
+        self.current_transactions.append(transaction)
+        return self.last_block["index"] + 1
 
 # Instantiate our Node
 app = Flask(__name__)
@@ -122,17 +126,23 @@ def mine():
     blk_str = json.dumps(blockchain.last_block, sort_keys=True)
 
     is_proof_valid = blockchain.valid_proof(blk_str, proof_sent)
+    recipient_id = data["id"]
 
     if is_proof_valid:
         previous_hash = blockchain.hash(blockchain.last_block)
         new_blk = blockchain.new_block(proof_sent, previous_hash)
+        blockchain.new_transaction(sender="0", recipient=recipient_id, amount=1)
+        
         response = {
-            'message': 'Congratulation! New block is found'
+            "message": "Congratulation! New block is found",
+            "index": new_blk["index"],
+            "transactions": new_blk["transactions"],
+            "proof": new_blk["proof"],
+            "previous_hash": new_blk["previous_hash"]
         }
         return jsonify(response), 200
     else:
         return jsonify({'message': 'Invalid Proof. Unsuccessful Try again.'}), 200
-
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
