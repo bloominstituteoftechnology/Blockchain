@@ -64,6 +64,7 @@ if __name__ == '__main__':
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
+        print(data)
         new_proof = proof_of_work(data.get('last_block'))
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
@@ -75,7 +76,7 @@ if __name__ == '__main__':
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        if data["message"] == "New block formed":
+        if data["message"] == "Congratulation! New block is found":
             coin_mined += 1
             print(F"Got a coin!, you now have {coin_mined} coin(s) ")
 
