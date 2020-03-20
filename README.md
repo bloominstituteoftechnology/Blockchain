@@ -5,7 +5,12 @@ https://imgur.com/xSlgvtl
 
 ### Part 1 in Class Project
 * Basic Setup and Proof of Work (basic_block_gp)
+```
+pipenv shell
+pipenv install
+python basic_block_gp/blockchain.py
 
+```
 ### Part 1 Take Home Project
 * Client Miners (client_mining_p)
 
