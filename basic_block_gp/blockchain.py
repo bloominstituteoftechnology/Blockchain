@@ -5,7 +5,6 @@ from uuid import uuid4
 
 from flask import Flask, jsonify, request
 
-
 class Blockchain(object):
     def __init__(self):
         self.chain = []
@@ -17,32 +16,35 @@ class Blockchain(object):
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
-
         A block should have:
         * Index
         * Timestamp
         * List of current transactions
         * The proof used to mine this block
         * The hash of the previous block
-
         :param proof: <int> The proof given by the Proof of Work algorithm
         :param previous_hash: (Optional) <str> Hash of previous Block
         :return: <dict> New Block
         """
 
         block = {
-            # TODO
+            'index': len(self.chain) + 1,
+            'proof': proof,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'previous_hash': previous_hash,
         }
 
         # Reset the current list of transactions
+        self.current_transactions = []
         # Append the chain to the block
+        self.chain.append(block)
         # Return the new block
-        pass
+        return block
 
     def hash(self, block):
         """
         Creates a SHA-256 hash of a Block
-
         :param block": <dict> Block
         "return": <str>
         """
@@ -55,18 +57,21 @@ class Blockchain(object):
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
 
-        # TODO: Create the block_string
+        # Create the block_string
+        block_str = json.dumps(block, sort_keys=True)
+        str_bytes = block_str.encode()
 
-        # TODO: Hash this string using sha256
-
+        # Hash this string using sha256
+        hash_obj = hashlib.sha256(str_bytes)
+        hash_str = hash_obj.hexdigest()
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
         # hash to a string of hexadecimal characters, which is
         # easier to work with and understand
 
-        # TODO: Return the hashed block string in hexadecimal format
-        pass
+        # Return the hashed block string in hexadecimal format
+        return hash_str
 
     @property
     def last_block(self):
@@ -84,12 +89,11 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
-        # TODO
         guess = f'{block_string}{proof}'.encode()
-        guess_hash = hashlib.sha256(guess).hexdigest()
 
-        return guess_hash[:6] == "000000"
         # return True or False
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:6] == '000000'
 
 
 # Instantiate our Node
@@ -106,51 +110,46 @@ blockchain = Blockchain()
 def mine():
     data = request.get_json()
 
-    # check for proof and id
-    required = ['proof', 'id']
-
-    if not all(k in data for k in required):
-        response ={'message': "Missing values."}
+    req_params = ['proof', 'id']
+    if not all(k in data for k in req_params):
+        response = {
+            'message': 'Missing required fields.'
+        }
         return jsonify(response), 400
 
-    submitted_proof = data['proof']
-    miner_id = data['id']
+    proof_sent = data['proof']
 
-    block_string = json.dumps(blockchain.last_block, sort_keys=True)
+    blk_str = json.dumps(blockchain.last_block, sort_keys=True)
 
-    is_valid_proof = blockchain.valid_proof(block_string, submitted_proof)
+    is_proof_valid = blockchain.valid_proof(blk_str, proof_sent)
 
-    if is_valid_proof:
-
+    if is_proof_valid:
         previous_hash = blockchain.hash(blockchain.last_block)
-        new_block = blockchain.new_block(submitted_proof, previous_hash)
-
-        blockchain.new_transaction(sender='0', receiver=miner_id, amount=1)
-
+        new_blk = blockchain.new_block(proof_sent, previous_hash)
         response = {
-            'message': 'Congratulations!'
+            'message': 'Congratulation! New block is found'
         }
-
+        return jsonify(response), 200
     else:
-        response = {
-            'message': 'Try again: proof is invalid, or block has changed'
-        }
+        return jsonify({'message': 'Invalid Proof. Unsuccessful Try again.'}), 200
 
-    return jsonify(response), 200
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        # Return the chain and its current length
         'chain': blockchain.chain,
         'chain_length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
-@app.route('/lastblock', methods=['GET'])
-def last_block():
+
+@app.route('/last_block', methods=['GET'])
+def last_block_in_chain():
+    # last block in chain
+    last_block = blockchain.chain[-1]
     response = {
-        "last_block": blockchain.last_block,
+        'last_block': last_block
     }
     return jsonify(response), 200
 
