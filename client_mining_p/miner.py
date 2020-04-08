@@ -11,7 +11,7 @@ def proof_of_work(block):
     # Stringify the block and look for a proof
     block_string = json.dumps(block, sort_keys=True)
     # proof with 6 leading zeros
-    proof = 000000
+    proof = 0
     # Loop through possibilities, checking each one against `valid_proof`
     while valid_proof(block_string, proof) is False:
         proof += 1  
@@ -44,12 +44,12 @@ if __name__ == '__main__':
         node = sys.argv[1]
     else:
         node = "http://localhost:5000"
-
     # Load ID
     f = open("my_id.txt", "r")
     id = f.read()
     print("ID is", id)
     f.close()
+    coins_mined = 0
 
     # Run forever until interrupted
     while True:
@@ -72,8 +72,14 @@ if __name__ == '__main__':
 
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
+        print(data['message'])
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+        if data['message'] == "New Block Forged":
+            coins_mined += 1
+            print(coins_mined)
+            break
+        else:
+            print(data['message'])
