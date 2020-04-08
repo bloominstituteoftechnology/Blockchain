@@ -1,8 +1,8 @@
 import hashlib
 import requests
-
 import sys
 import json
+
 
 
 def proof_of_work(block):
@@ -21,19 +21,19 @@ def valid_proof(block_string, proof):
 
 
 if __name__ == '__main__':
-    # What is the server address? IE `python3 miner.py https://server.com/api/`
     if len(sys.argv) > 1:
         node = sys.argv[1]
     else:
         node = "http://localhost:5000"
 
-    # Load ID -- ID FOR WHAT? WHAT HAS AN ID???
+    # Load ID
     f = open("my_id.txt", "r")
     id = f.read()
     print("ID is", id)
     f.close()
 
     coins_mined = 0
+    print('Starting mining.')
 
     # Run until interrupted, and handle non-json response:
     while True:
@@ -46,15 +46,15 @@ if __name__ == '__main__':
             print(r)
             break
 
-        # TODO: Get block from `data` and use it to look for a new proof
+        # Get block from `data` to look for new proof:
         block = data['last_block']
         new_proof = proof_of_work(block)
         print(f'Proof found: {new_proof}')
 
-        # When found, POST it to the server {"proof": new_proof, "id": id}
+        # When found, POST to server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
-
         r = requests.post(url=node + "/mine", json=post_data)
+
         try:
             data = r.json()
         except ValueError:
@@ -63,14 +63,14 @@ if __name__ == '__main__':
             print(r)
             break
 
-        # TODO: If the server responds with a 'message' 'New Block Forged'
-        # add 1 to the number of coins mined and print it.  Otherwise,
-        # print the message from the server.
-        coins = 0
-        if message = 'New Block Forged':
-            coins += 1
-            response = {'coins': coins}
-            return jsonify(response)
+        print(data['message'])
+        # If server responds with 'message': 'New Block Forged', add 1 coins mined and print it. 
+        # Else print the message from the server.
+        if message == 'New Block Forged':
+            coins_mined += 1
+            response = {'coins_mined': coins_mined}
+            print(response)
+
         else: 
             return jsonify(message)
 

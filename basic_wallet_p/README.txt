@@ -10,3 +10,8 @@ This app should:
 Stretch Goals:
     * Use styling to visually distinguish coins sent and coins received
     * Paginate the list of transactions if there are more than ten
+
+TO START SERVER:
+    1. pip install flask
+    2. export FLASK_APP=flask_homepg.py
+    3. flask run

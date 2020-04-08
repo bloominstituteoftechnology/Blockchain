@@ -2,7 +2,7 @@ import hashlib
 import json
 from time import time
 from uuid import uuid4
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 
 class Blockchain(object):
@@ -15,7 +15,7 @@ class Blockchain(object):
         block = {
             'index': len(self.chain) + 1,
             'timestamp': time(),
-            'transactions': self.current_transactions
+            'transactions': self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.last_block)
         }
@@ -28,16 +28,9 @@ class Blockchain(object):
         return self.chain
 
     def hash(self, block):
-        # Use json.dumps to convert json into a string
-        # Use hashlib.sha256 to create a hash
-        # Use .encode() to convert Python string into a BYTE string.
-        # Sort dict keys or we'll have inconsistent hashes
         string_block = json.dumps(block, sort_keys=True)
         raw_hash = hashlib.sha256(string_block.encode())
-        
 
-        # The sha256 function returns the hash in a raw string that includes escaped characters.
-        # This can be hard to read, but .hexdigest() converts hash to a string of hexadecimal characters
         hex_hash = raw_hash.hexdigest()
         return hex_hash
 
@@ -54,19 +47,17 @@ class Blockchain(object):
 
     @staticmethod
     def valid_proof(block_string, proof):
-        guess = f'{block_string}{proof}'
+        guess = f'{block_string}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
 
         return guess_hash[:3] =='000'
 
 
-# Instantiate our Node
+# Instantiate our Node, unique address and blockchain:
 app = Flask(__name__)
 
-# Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
 
-# Instantiate the Blockchain
 blockchain = Blockchain()
 
 
@@ -88,13 +79,16 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        'message': 'hello'
         'chain': blockchain.chain,
-        'length': len(blockchain.chain)'
+        'length': len(blockchain.chain)
     }
     return jsonify(response), 200
 
 
-# Run the program on port 5000
+# @app.route('/')
+# def homepage():
+#     return render_template('index.html')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
