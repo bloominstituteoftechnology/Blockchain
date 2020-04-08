@@ -90,19 +90,29 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    # def proof_of_work(self):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     Stringify the block and look for a proof.
-    #     Loop through possibilities, checking each one against `valid_proof`
-    #     in an effort to find a number that is a valid proof
-    #     :return: A valid proof for the provided block
-    #     """
-    #     block_string = json.dumps(self.last_block, sort_keys=True)
-    #     proof = 0
-    #     while not self.valid_proof(block_string, proof):
-    #         proof += 1
-    #     return proof
+    def proof_of_work(self,block, proof):
+        """
+        Simple Proof of Work Algorithm
+        Stringify the block and look for a proof.
+        Loop through possibilities, checking each one against `valid_proof`
+        in an effort to find a number that is a valid proof
+        :return: A valid proof for the provided block
+        """
+        # block_string = json.dumps(self.last_block, sort_keys=True)
+        # proof = 0
+        # while not self.valid_proof(block_string, proof):
+        #     proof += 1
+        # return proof
+        block_string = json.dumps(block, sort_keys=True)
+    # proof with 6 leading zeros
+        proof = 000000
+    # Loop through possibilities, checking each one against `valid_proof`
+        while valid_proof(block_string, proof) is False:
+            proof += 1  
+    # in an effort to find a number that is a valid proof
+    # :return: A valid proof for the provided block
+    
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -118,7 +128,7 @@ class Blockchain(object):
         """
         guess = f"{block_string}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:4] == "0000"
+        return guess_hash[:6] == "000000"
 
 
 # Instantiate our Node
@@ -130,11 +140,32 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
-
-@app.route('/mine', methods=['GET'])
+# Modify the mine endpoint to instead receive and validate or reject a new proof 
+# sent by a client. 
+# It should accept a POST
+# Use data = request.get_json() to pull the data out of the POST 
+# Note that request and requests both exist in this project
+# Check that 'proof', and 'id' are present 
+# return a 400 error using jsonify(response) with a 'message'
+# Return a message indicating success or failure. 
+# emember, a valid proof should fail for all senders except the first.
+@app.route('/mine', methods=['POST'])
 def mine():
+    # Use data = request.get_json() to pull the data out of the POST 
+    data = request.get_json()
+    # block = json.dumps(blockchain.last_block, sort_keys=True)
+    # Check that 'proof', and 'id' are present 
+    guess = data['proof']
+    user_id = data['id']
     # Run the proof of work algorithm to get the next proof
-    proof = blockchain.proof_of_work()
+
+    if user_id is None:
+        return jsonify({'message':'no user id'}) , 400
+    proof = blockchain.proof_of_work(blockchain.last_block, guess)
+    # return a 400 error using jsonify(response) with a 'message'   
+    if proof is None:
+        return jsonify({'message':'no proof'}) , 400    
+
 
     # Forge the new Block by adding it to the chain with the proof
     previous_hash = blockchain.hash(blockchain.last_block)
@@ -149,6 +180,8 @@ def mine():
     }
 
     return jsonify(response), 200
+
+
 
 
 @app.route('/chain', methods=['GET'])
