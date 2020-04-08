@@ -79,7 +79,7 @@ if __name__ == '__main__':
         r = requests.post(url=node + "/mine", json=post_data)
         try:
             data = r.json()
-            if data['Message'] == 'New Block Forged':
+            if data['message'] == 'New Block Forged':
                 coins_mined += 1
             print(f'Success!  {coins_mined}')
             print(data)
