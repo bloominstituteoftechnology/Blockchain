@@ -1,31 +1,38 @@
 import hashlib
 import requests
-
 import sys
 import json
 
-"""
-step 1: get last block from server
-step 2: initiate proof of work process
-step 3: when proof is found, call mine endopoint and send proof
-step 4: get positive response (receive 1 coin), or failure (go back to step 1 because successful proof may have already been submitted and a new block generated, so we have to get that latest block. The one we have is now the one before last.)
-"""
-
 
 def proof_of_work(block):
-
-    print("proof of work process starting")
-    block_string = json.dumps(block["last_block"], sort_keys=True)
+    """
+    Simple Proof of Work Algorithm
+    Stringify the block and look for a proof.
+    Loop through possibilities, checking each one against `valid_proof`
+    in an effort to find a number that is a valid proof
+    :return: A valid proof for the provided block
+    """
+    print("Proof of work process starting")
+    block_string = json.dumps(block, sort_keys=True)
     proof = 0
-    while not block.valid_proof(block_string, proof):
+    while not valid_proof(block_string, proof):
         proof += 1
-    return proof, "proof of work process is finished"
+    return proof
 
 
 def valid_proof(block_string, proof):
+    """
+    Validates the Proof:  Does hash(block_string, proof) contain 6
+    leading zeroes?  Return true if the proof is valid
+    :param block_string: <string> The stringified block to use to
+    check in combination with `proof`
+    :param proof: <int?> The value that when combined with the
+    stringified previous block results in a hash that has the
+    correct number of leading zeroes.
+    :return: True if the resulting hash is a valid proof, False otherwise
+    """
     guess = f"{block_string}{proof}".encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
-
     return guess_hash[:6] == "000000"
 
 
@@ -42,10 +49,11 @@ if __name__ == "__main__":
     print("ID is", id)
     f.close()
 
+    coins_mined = 0
     # Run forever until interrupted
     while True:
         r = requests.get(url=node + "/last_block")
-        # Handle non-json response
+        # Handle non-json response (stretch)
         try:
             data = r.json()
         except ValueError:
@@ -55,7 +63,7 @@ if __name__ == "__main__":
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
-        new_proof = proof_of_work(data)
+        new_proof = proof_of_work(data["last_block"])
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
@@ -64,9 +72,10 @@ if __name__ == "__main__":
         data = r.json()
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
-        coins = 0
+        # add 1 to the number of coins mined and print it.  Otherwise,
+        # print the message from the server.
         if data["message"] == "New Block Forged":
-            coins += 1
-            print(f"coins: {coins}")
+            coins_mined += 1
+            print(f"Total coins mined: {coins_mined}")
         else:
             print(data["message"])
