@@ -220,6 +220,16 @@ def new_transaction():
     return jsonify(response), 200
 
 
+@app.route('/transactions', methods=['GET'])
+def return_transactions():
+    response = {
+        'transactions': blockchain.current_transactions
+    
+    }
+    return jsonify(response), 200
+
+
+
 
 
 
