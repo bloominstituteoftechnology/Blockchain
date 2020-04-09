@@ -31,13 +31,22 @@ class Blockchain(object):
         """
 
         block = {
-            # TODO
+            'index': len(self.chain)+1,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
+        
+         self.current_transactions = []
+         self.chain.append(block)
+         return block
+        
 
         # Reset the current list of transactions
         # Append the chain to the block
         # Return the new block
-        pass
+        
 
     def hash(self, block):
         """
@@ -55,9 +64,9 @@ class Blockchain(object):
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
 
-        # TODO: Create the block_string
+        block_string = json.dumps(block, sort_keys=True).encode()
 
-        # TODO: Hash this string using sha256
+        hash = hashlib.sha256(block_string).hexdigest()
 
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
@@ -66,7 +75,7 @@ class Blockchain(object):
         # easier to work with and understand
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+        return hash
 
     @property
     def last_block(self):
@@ -80,9 +89,11 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
-        # return proof
+        block_string = json.dumps(self.last_block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -96,9 +107,9 @@ class Blockchain(object):
         correct number of leading zeroes.
         :return: True if the resulting hash is a valid proof, False otherwise
         """
-        # TODO
-        pass
-        # return True or False
+        guess = f'{block_string}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:DIFFICULTY] == "0" * DIFFICULTY
 
 
 # Instantiate our Node
