@@ -102,7 +102,7 @@ class Blockchain(object):
         """
         guess = f"{block_string}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
-        return guess_hash[:6] == "000000"
+        return guess_hash[:3] == "000"
 
 
 # Instantiate our Node
@@ -167,4 +167,3 @@ def get_last_block():
 # Run the program on port 5000
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
