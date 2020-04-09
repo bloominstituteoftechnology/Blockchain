@@ -22,7 +22,7 @@ def proof_of_work(block):
     # in an effort to find a number that is a valid proof
     # :return: A valid proof for the provided block
     
-        return proof
+    return proof
 
 
 def valid_proof(block_string, proof):
@@ -72,7 +72,8 @@ if __name__ == '__main__':
         print('Success')
         print('Starting proof')
         # new_proof = ???
-        new_proof  = proof_of_work(block)
+        new_proof = proof_of_work(data['last_block'])
+        # new_proof  = proof_of_work(block)
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
