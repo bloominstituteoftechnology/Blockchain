@@ -52,6 +52,14 @@ class Blockchain(object):
         # Return the new block
         return block
         
+    def new_transaction(self, sender, recipient, amount):
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount
+        })
+        return self.last_block['index'] + 1
+        
     def hash(self, block):
         """
         Creates a SHA-256 hash of a Block
@@ -127,12 +135,16 @@ def mine():
         return jsonify(response), 400
     # Check if proof is valid
     block_string = json.dumps(blockchain.last_block, sort_keys=True)
-    validity = blockchain.valid_proof(block_string, data['proof'])
+    valid_proof = blockchain.valid_proof(block_string, data['proof'])
     
-    if validity:
+    if valid_proof:
+        blockchain.new_transaction(sender="0", recipient=node_identifier, amount=1)
         # Forge the new Block by adding it to the chain with the proof
         previous_hash = blockchain.hash(blockchain.last_block)
         block = blockchain.new_block(data['proof'], previous_hash)
+
+        
+
 
         response = {
                'message': "New Block Forged",
@@ -147,7 +159,7 @@ def mine():
         response = {
         'message': "Mine unsuccessful"
     }
-    return jsonify(response), 400
+    return jsonify(response), 200
     
 @app.route('/chain', methods=['GET'])
 def full_chain():
@@ -162,6 +174,19 @@ def chain_last_block():
     response = {
         # Return last block in chain
         'last_block': blockchain.last_block
+    }
+    return jsonify(response), 200
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    values = request.get_json()
+
+    required = ['sender', 'recipient', 'amount']
+    if not all (k in values for k in required):
+        return 'Missing Values', 400
+    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    response = {
+        'message': f"Transaction will be added to Block {index}"
     }
     return jsonify(response), 200
     
