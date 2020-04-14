@@ -67,6 +67,7 @@ class Blockchain(object):
 
         # TODO: Hash this string using sha256
         raw_hash = hashlib.sha256(block_string)
+
         # By itself, the sha256 function returns the hash in a raw string
         # that will likely include escaped characters.
         # This can be hard to read, but .hexdigest() converts the
@@ -88,9 +89,12 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
-        # TODO
-        pass
-        # return proof
+        block_string - json.dump(block, sort_keys=True)
+        proof = 0
+        while self.valid_proof(block_string, proof) is False:
+            proof += 1
+
+        return proof
 
     @staticmethod
     def valid_proof(block_string, proof):
@@ -105,8 +109,13 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
+        guess = block_string + str(proof)
+        guess = guess.encode()
+
+        hash_value = hashlib.sha256(guess).hexdigest()
+        print(hash_value)
         # return True or False
+        return hash_value[:3] == '000'
 
 
 
@@ -123,11 +132,13 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
-
+    print("we shall now mine a block")
+    proof = blockchain.proof_of_work(blockchain.last_block)
+    print(f'after a long process, we got a value {proof}')
     # Forge the new Block by adding it to the chain with the proof
-
+    blockchain.new_block(proof)
     response = {
-        # TODO: Send a JSON response with the new block
+       'block': new_block
     }
 
     return jsonify(response), 200
@@ -136,7 +147,8 @@ def mine():
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
-        # TODO: Return the chain and its current length
+        'len': len(blockchain.chain),
+        'chain': blockchain.chain
     }
     return jsonify(response), 200
 
