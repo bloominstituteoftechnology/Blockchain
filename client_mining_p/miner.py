@@ -72,6 +72,7 @@ if __name__ == '__main__':
 
         # TODO: Get the block from `data` and use it to look for a new proof
         # new_proof = ???
+        print('looking for good proof of work')
         new_proof = proof_of_work(data)
         print("got the new proof: ", new_proof)
 

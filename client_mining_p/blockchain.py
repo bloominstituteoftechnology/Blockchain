@@ -153,26 +153,44 @@ def hello_world():
 # return with 400 error using jsonify(response) with a message
 # return message indicating success or failure
 # valid proof should fail for all senders except the first
-@app.route('/mine', methods=['GET'])
-def mine():
-    # Run the proof of work algorithm to get the next proof'
+# @app.route('/mine', methods=['GET'])
+# def mine_get():
+#    # Run the proof of work algorithm to get the next proof'
+
+#     print("we shall now mine a block!")
+
+#     proof = blockchain.proof_of_work(blockchain.last_block)
+
+#     print(f"after a long process... here it is... {proof}")
+
+#     # Forge the new Block by adding it to the chain with the proof
+
+#     new_block = blockchain.new_block(proof)
+
+#     response = {
+#         'block': new_block,
+#     }
+
+#     return jsonify(response), 200
+
+
+@app.route('/mine', methods=['POST'])
+def mine_post():
+    print(f'we have a post')
     data = request.get_json()
     print("data from request:", data)
-    print("we shall now mine a block!")
-
-    proof = blockchain.proof_of_work(blockchain.last_block)
-
-    print(f"after a long process... here it is... {proof}")
-
-    # Forge the new Block by adding it to the chain with the proof
-
+    print('that was the data above...... does this print?')
+    proof = data['proof']
+    print(proof)
+    p_id = data['id']
+    print(p_id)
     new_block = blockchain.new_block(proof)
 
     response = {
         'block': new_block,
-        'data': data
+        'made_by': p_id
     }
-
+    print(response)
     return jsonify(response), 200
 
 
