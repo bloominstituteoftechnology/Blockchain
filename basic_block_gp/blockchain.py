@@ -52,7 +52,6 @@ class Blockchain(object):
         :param block": <dict> Block
         "return": <str>
         """
-        
         # Use json.dumps to convert json into a string
         # Use hashlib.sha256 to create a hash
         # It requires a `bytes-like` object, which is what
@@ -60,9 +59,9 @@ class Blockchain(object):
         # It converts the Python string into a byte string.
         # We must make sure that the Dictionary is Ordered,
         # or we'll have inconsistent hashes
-        
+
         # TODO: Create the block_string
-        string_object = json.dump(block, sort_keys=True)
+        string_object = json.dumps(block, sort_keys=True)
         block_string = string_object.encode()
 
         # TODO: Hash this string using sha256
@@ -89,7 +88,7 @@ class Blockchain(object):
         in an effort to find a number that is a valid proof
         :return: A valid proof for the provided block
         """
-        block_string - json.dump(block, sort_keys=True)
+        block_string = json.dumps(block, sort_keys=True)
         proof = 0
         while self.valid_proof(block_string, proof) is False:
             proof += 1
@@ -109,14 +108,13 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        guess = block_string + str(proof)
+        # print(f"i will now check if {proof} is valid")
+        guess = block_string + str(proof) 
         guess = guess.encode()
 
         hash_value = hashlib.sha256(guess).hexdigest()
-        print(hash_value)
-        # return True or False
-        return hash_value[:3] == '000'
 
+        return hash_value[:3] == '000'
 
 
 # Instantiate our Node
@@ -129,16 +127,24 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    response = {
+        'text': 'hello world'
+    }
+    return jsonify(response), 200
+
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
-    print("we shall now mine a block")
+    # print("We shall now mine a block!")
     proof = blockchain.proof_of_work(blockchain.last_block)
-    print(f'after a long process, we got a value {proof}')
+    # print(f'After a long process, we got a value {proof}')
+    
     # Forge the new Block by adding it to the chain with the proof
-    blockchain.new_block(proof)
+    new_block = blockchain.new_block(proof)
     response = {
-       'block': new_block
+        'block': new_block
     }
 
     return jsonify(response), 200
@@ -155,4 +161,4 @@ def full_chain():
 
 # Run the program on port 5000
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8000)
