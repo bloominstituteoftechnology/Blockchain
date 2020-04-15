@@ -1,0 +1,16 @@
+BLOCKCHAIN
+    what is a blockchain?
+    basically another data structure
+    offers trust that no one could have tampered with the data inside the blockchain
+
+    kind of like a linked list
+    very often may want to use a linkedlist to make one
+    want to know the relationship between each block
+    [block] -> [block] -> [block]
+
+    inside the block:
+        index, timestamp, transactions <- actual data,
+        a proof: just a number, but an important one
+        will also need hash of the previous block
+
+        hash(block string + proof) = some value, usually 0's in the beginning
