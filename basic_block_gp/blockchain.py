@@ -11,6 +11,7 @@ class Blockchain(object):
         self.current_transactions = []
         # Create the genesis block
         self.new_block(previous_hash=1, proof=100)
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -39,7 +40,7 @@ class Blockchain(object):
         # Append the chain to the block
         self.chain.append(block)
         # Return the new block
-        pass
+
         return block
 
     def hash(self, block):
@@ -49,7 +50,6 @@ class Blockchain(object):
         "return": <str>
         """
 
-        
         # Use json.dumps to convert json into a string
         # Use hashlib.sha256 to create a hash
         # It requires a `bytes-like` object, which is what
@@ -73,12 +73,13 @@ class Blockchain(object):
         hash_string = raw_hash.hexdigest()
 
         # TODO: Return the hashed block string in hexadecimal format
-        pass
+
         return hash_string
 
     @property
     def last_block(self):
         return self.chain[-1]
+
     def proof_of_work(self, block):
         """
         Simple Proof of Work Algorithm
@@ -88,7 +89,7 @@ class Blockchain(object):
         :return: A valid proof for the provided block
         """
         # TODO
-        pass
+
         # return proof
         block_string = json.dumps(block, sort_keys=True)
         proof = 0
@@ -109,11 +110,10 @@ class Blockchain(object):
         :return: True if the resulting hash is a valid proof, False otherwise
         """
         # TODO
-        pass
+
         print(f"I will now check if {proof}  is valid")
         guess = block_string + str(proof)
         guess = guess.encode()
-
 
         hash_value = hashlib.sha256(guess).hexdigest()
         return hash_value[:3] == '000'
@@ -142,6 +142,8 @@ def mine():
     }
 
     return jsonify(response), 200
+
+
 @app.route('/chain', methods=['GET'])
 def full_chain():
     response = {
@@ -150,6 +152,7 @@ def full_chain():
         'chain': blockchain.chain
     }
     return jsonify(response), 200
+
 
 # Run the program on port 5000
 if __name__ == '__main__':
