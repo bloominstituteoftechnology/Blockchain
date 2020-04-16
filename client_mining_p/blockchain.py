@@ -17,6 +17,20 @@ class Blockchain(object):
         # created different since it has no previous block to pull data for the proof
         self.new_block(previous_hash=1, proof=100)
 
+    def new_transaction(self, sender, recipient, amount):
+        """ 
+        creates a new transaction to go into the next mined block
+
+
+        """
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount
+        })
+
+        return self.last_block['index']+1
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -86,23 +100,23 @@ class Blockchain(object):
         return self.chain[-1]
 
     # MOVE TODO - remove this from the server and setup on the client side.
-    def proof_of_work(self, block):
-        """
-        Simple Proof of Work Algorithm
-        Stringify the block and look for a proof.
-        Loop through possibilities, checking each one against `valid_proof`
-        in an effort to find a number that is a valid proof
-        :return: A valid proof for the provided block
-        """
-        block_string = json.dumps(block, sort_keys=True)
+    # def proof_of_work(self, block):
+    #     """
+    #     Simple Proof of Work Algorithm
+    #     Stringify the block and look for a proof.
+    #     Loop through possibilities, checking each one against `valid_proof`
+    #     in an effort to find a number that is a valid proof
+    #     :return: A valid proof for the provided block
+    #     """
+    #     block_string = json.dumps(block, sort_keys=True)
 
-        proof = 0
+    #     proof = 0
 
-        while self.valid_proof(block_string, proof) == False:
-            proof += 1
+    #     while self.valid_proof(block_string, proof) == False:
+    #         proof += 1
 
-        return proof
-    # VP TODO - change to have 6 zeros at teh start below instead of 3
+    #     return proof
+    # # VP TODO - change to have 6 zeros at teh start below instead of 3
     # will need to change the slice to check for it also and the string to '000000'
     # maybe wait to change this after all else is working to be faster in testing it out
     @staticmethod
@@ -176,22 +190,43 @@ def hello_world():
 
 @app.route('/mine', methods=['POST'])
 def mine_post():
-    print(f'we have a post')
+    # print(f'we have a post')
     data = request.get_json()
+    if 'id' not in data or 'proof' not in data:
+        response = {'message': "missing data"}
+        return jsonify(response), 400
     print("data from request:", data)
-    print('that was the data above...... does this print?')
+    # print('that was the data above...... does this print?')
     proof = data['proof']
     print(proof)
     p_id = data['id']
     print(p_id)
-    new_block = blockchain.new_block(proof)
 
-    response = {
-        'block': new_block,
-        'made_by': p_id
-    }
-    print(response)
-    return jsonify(response), 200
+    last_block = blockchain.last_block
+    block_string = json.dumps(last_block, sort_keys=True)
+
+    if blockchain.valid_proof(block_string, proof):
+        # lets mine a new block and return success
+        blockchain.new_transaction(
+            sender="0",
+            recipient=data['id'],
+            amount=1
+        )
+        new_block = blockchain.new_block(proof)
+
+        response = {
+            'block': new_block,
+            'made_by': p_id,
+        }
+        print(response)
+        return jsonify(response), 200
+
+    else:
+        # respond with error message
+        response = {
+            'message': "invalid proof!"
+        }
+        return jsonify(response), 400
 
 
 @app.route('/chain', methods=['GET'])
@@ -210,6 +245,23 @@ def last_block():
 
     response = {
         'last_block': last
+    }
+    return jsonify(response), 200
+
+
+@app.route('/transactions_new', methods=['POST'])
+def new_transactions():
+    data = request.get_json()
+
+    # check that require fields are present
+    if 'recipient' not in data or 'amount' not in data or 'sender' not in data:
+        response = {'message': "Error: missing values"}
+        return jsonify(response), 400
+
+    index = blockchain.new_transaction(
+        data['sender'], data['recipient'], data['amount'])
+    response = {
+        'message': f'transaction will be posted in block with index {index}'
     }
     return jsonify(response), 200
 
