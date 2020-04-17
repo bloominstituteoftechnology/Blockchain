@@ -111,6 +111,15 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+@app.route("/", methods=['GET'])
+def greet():
+    response = {
+        "greeting": "Hello, World!"
+    }
+
+    return jsonify(response), 200
+
+
 @app.route('/mine', methods=['GET'])
 def mine():
     # Run the proof of work algorithm to get the next proof
