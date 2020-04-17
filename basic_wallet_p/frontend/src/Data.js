@@ -11,7 +11,7 @@ export default function Data() {
             axios.get('http://localhost:5000/chain')
                 .then(response => {
                     setData(response.data.chain)
-                    console.log('in state', response.data.chain)
+                    // console.log('in state', response.data.chain)
                 })
                 .catch(error => {
                     console.log('server error dude!', error);
@@ -33,10 +33,9 @@ export default function Data() {
                 }
             ))
                 : []))
-        console.log(theList)
         return theList
     }
-    getTransactions();
+    // getTransactions();
     // this below now makes it so i have access to just a list of all transactions
     theList = getTransactions();
     console.log("after getTransactions fn:", theList)
@@ -67,7 +66,7 @@ export default function Data() {
                     <p>proof: {thedata.proof}</p>
                     {/* <p>transactions: {thedata.transactions.length ? thedata.transactions[0].recipient : ''}</p> */}
                     {/* can look at one like above or map through like below for each one */}
-                    <p>{thedata.transactions.length > 0 ? thedata.transactions.map(trans => <p>transactions: {trans.recipient}, sender: {trans.sender}, amount: {trans.amount}</p>) : ''}</p>
+                    <p>{thedata.transactions.length > 0 ? thedata.transactions.map(trans => <p>recipient: {trans.recipient}, sender: {trans.sender}, amount: {trans.amount}</p>) : ''}</p>
                 </section>
             ))}
         </div>
