@@ -43,7 +43,7 @@ def valid_proof(block_string, proof):
     # print(hash_value)
 
     # return hash_value[:6] == '000000'
-    return hash_value[:4] == '0000'
+    return hash_value[:5] == '00000'
 
 
 if __name__ == '__main__':

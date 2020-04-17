@@ -18,7 +18,10 @@ function App() {
           MY ATTEMPT AT THIS FRONTEND WALLET
         </p>
       </header>
-      <Data />
+      <section>
+        <h2>All Transactions</h2>
+        <Data />
+      </section>
     </div>
   );
 }
